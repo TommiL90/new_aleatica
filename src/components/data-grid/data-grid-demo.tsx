@@ -579,7 +579,7 @@ export function DataGridDemo() {
     enablePaste: true,
   });
 
-  const height = Math.max(400, windowSize.height - 150);
+  const height = Math.max(400, windowSize.height - 240);
 
   return (
     <div className="flex flex-col gap-4">

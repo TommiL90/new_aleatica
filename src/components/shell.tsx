@@ -8,7 +8,8 @@ const shellVariants = cva(
   {
     variants: {
       variant: {
-        default: "container",
+        default: "",
+        container: "container",
         sidebar: "",
         centered:
           "container flex h-dvh max-w-2xl flex-col justify-center py-16",
