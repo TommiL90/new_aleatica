@@ -161,3 +161,33 @@
     @apply px-4;
   }
 }
+
+
+
+@layer utilities {
+  @keyframes dot-pulse {
+    0% {
+      opacity: 0.25;
+      transform: scale(0.85);
+    }
+    50% {
+      opacity: 1;
+      transform: scale(1.1);
+    }
+    100% {
+      opacity: 0.25;
+      transform: scale(0.85);
+    }
+  }
+
+  .animate-dot-pulse {
+    animation: dot-pulse 1.5s ease-in-out infinite;
+  }
+
+  @media (prefers-reduced-motion: reduce) {
+    .animate-dot-pulse {
+      animation: none;
+    }
+  }
+}
+
