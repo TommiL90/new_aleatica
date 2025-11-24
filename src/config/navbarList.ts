@@ -400,7 +400,7 @@ export const navbarList: NavbarItem[] = [
     permission: ["read", "Projects"],
     firstSubItems: [
       {
-        title: "Mantenimiento Mayor",
+        title: "Mant. Mayor",
         description: "Presupuestos de Mantenimiento Mayor",
         secondSubItems: [
           {
@@ -438,7 +438,7 @@ export const navbarList: NavbarItem[] = [
     title: "Catálogos Globales",
     firstSubItems: [
       {
-        title: "Mantenimiento Mayor",
+        title: "Mant. Mayor",
         description: "Catálogo de presupuesto de mantenimiento mayor",
         secondSubItems: [
           {
@@ -515,7 +515,7 @@ export const navbarList: NavbarItem[] = [
     title: "Consultas y Reportes",
     firstSubItems: [
       {
-        title: "Mantenimiento mayor", // Titulo modificado
+        title: "Mant. Mayor", // Titulo modificado
         description: "Reportes de presupuesto de proyecto",
         secondSubItems: [
           {
