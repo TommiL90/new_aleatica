@@ -2,7 +2,7 @@
 
 import { ChevronRight, type LucideIcon } from "lucide-react";
 import Link from "next/link";
-import { useAbility } from "@/client/providers/ability-context";
+import { useAbility } from "@/providers/ability-context";
 import {
   filterMenuItems,
   type NavBarFirstSubItem,
@@ -10,13 +10,13 @@ import {
   type NavBarThirdSubItem,
   type NavbarItem,
   navbarList,
-} from "@/presentation/components/navbar/navbarList";
+} from "@/config/navbarList";
 
 import {
   Collapsible,
   CollapsibleContent,
   CollapsibleTrigger,
-} from "@/presentation/components/ui/collapsible";
+} from "@/components/ui/collapsible";
 import {
   SidebarGroup,
   SidebarGroupLabel,
@@ -27,7 +27,7 @@ import {
   SidebarMenuSub,
   SidebarMenuSubButton,
   SidebarMenuSubItem,
-} from "@/presentation/components/ui/sidebar";
+} from "@/components/ui/sidebar";
 
 // Normalized interface for recursion
 interface NormalizedItem {
