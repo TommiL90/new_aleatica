@@ -12,10 +12,10 @@ import {
   Settings2,
   SquareTerminal,
 } from "lucide-react";
+import Link from "next/link";
 import type * as React from "react";
-
-import { NavRecursive } from "@/presentation/components/sidebar/nav-recursive";
-import { NavUser } from "@/presentation/components/sidebar/nav-user";
+import { NavRecursive } from "@/components/layouts/sidebar/nav-recursive";
+import { NavUser } from "@/components/layouts/sidebar/nav-user";
 import {
   Sidebar,
   SidebarContent,
@@ -24,7 +24,7 @@ import {
   SidebarMenu,
   SidebarMenuButton,
   SidebarMenuItem,
-} from "@/presentation/components/ui/sidebar";
+} from "@/components/ui/sidebar";
 
 const data = {
   user: {
@@ -157,7 +157,7 @@ export function AppSidebar({ ...props }: React.ComponentProps<typeof Sidebar>) {
         <SidebarMenu>
           <SidebarMenuItem>
             <SidebarMenuButton asChild size="lg">
-              <a href="#">
+              <Link href="/">
                 <div className="flex aspect-square size-8 items-center justify-center rounded-lg bg-sidebar-primary text-sidebar-primary-foreground">
                   <Command className="size-4" />
                 </div>
@@ -165,7 +165,7 @@ export function AppSidebar({ ...props }: React.ComponentProps<typeof Sidebar>) {
                   <span className="truncate font-medium">Acme Inc</span>
                   <span className="truncate text-xs">Enterprise</span>
                 </div>
-              </a>
+              </Link>
             </SidebarMenuButton>
           </SidebarMenuItem>
         </SidebarMenu>
