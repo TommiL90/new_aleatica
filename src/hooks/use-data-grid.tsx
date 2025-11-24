@@ -15,10 +15,13 @@ import * as React from "react";
 import { toast } from "sonner";
 import { DataGridCell } from "@/components/data-grid/data-grid-cell";
 import { getCellKey, getRowHeightValue, parseCellKey } from "@/lib/data-grid";
+import { useFillHandle } from "@/hooks/use-fill-handle";
 import type {
   CellPosition,
+  CellRange,
   ContextMenuState,
   FileCellData,
+  FillEvent,
   NavigationDirection,
   PasteDialogState,
   RowHeightValue,
@@ -127,7 +130,9 @@ interface UseDataGridProps<TData>
   enableColumnSelection?: boolean;
   enableSearch?: boolean;
   enablePaste?: boolean;
+
   readOnly?: boolean;
+  onFill?: (event: FillEvent) => void;
 }
 
 function useDataGrid<TData>({
@@ -148,6 +153,7 @@ function useDataGrid<TData>({
   enableSearch = false,
   enablePaste = false,
   readOnly = false,
+  onFill,
   ...dataGridProps
 }: UseDataGridProps<TData>) {
   const dataGridRef = React.useRef<HTMLDivElement>(null);
@@ -160,6 +166,7 @@ function useDataGrid<TData>({
   const footerRef = React.useRef<HTMLDivElement>(null);
 
   const dataGridPropsRef = useAsRef(dataGridProps);
+  const onFillRef = useAsRef(onFill);
   const listenersRef = useLazyRef(() => new Set<() => void>());
 
   const stateRef = useLazyRef<DataGridState>(() => {
@@ -1941,100 +1948,62 @@ function useDataGrid<TData>({
   const onPasteWithExpansion = React.useCallback(() => {
     onCellsPaste(true);
   }, [onCellsPaste]);
-
   const onPasteWithoutExpansion = React.useCallback(() => {
     onCellsPaste(false);
   }, [onCellsPaste]);
 
-  const defaultColumn: Partial<ColumnDef<TData>> = React.useMemo(
-    () => ({
+  const {
+    fillStart,
+    fillEnd,
+    isFilling,
+    onMouseDown: onFillMouseDown,
+    onMouseEnter: onFillMouseEnter,
+  } = useFillHandle({
+    onFill: onFillRef.current,
+    disabled: readOnly,
+  });
+
+  const table = useReactTable<TData>({
+    ...dataGridPropsRef.current,
+    data,
+    columns,
+    defaultColumn: {
       cell: DataGridCell,
       minSize: MIN_COLUMN_SIZE,
       maxSize: MAX_COLUMN_SIZE,
-    }),
-    [],
-  );
-
-  const tableOptions = React.useMemo<TableOptions<TData>>(
-    () => ({
-      ...dataGridPropsRef.current,
-      data,
-      columns,
-      defaultColumn,
-      initialState,
-      state: {
-        ...dataGridPropsRef.current.state,
-        sorting,
-        rowSelection,
-      },
-      onRowSelectionChange,
-      onSortingChange,
-      columnResizeMode: "onChange",
-      getCoreRowModel: getCoreRowModel(),
-      getSortedRowModel: getSortedRowModel(),
-      meta: {
-        ...dataGridPropsRef.current.meta,
-        dataGridRef,
-        cellMapRef,
-        focusedCell,
-        editingCell,
-        selectionState,
-        searchOpen,
-        rowHeight,
-        isScrolling,
-        readOnly,
-        pasteDialog,
-        getIsCellSelected,
-        getIsSearchMatch,
-        getIsActiveSearchMatch,
-        onRowHeightChange,
-        onRowSelect,
-        onRowsDelete: onRowsDeleteProp ? onRowsDelete : undefined,
-        onDataUpdate,
-        onFilesUpload,
-        onFilesDelete,
-        onColumnClick,
-        onCellClick,
-        onCellDoubleClick,
-        onCellMouseDown,
-        onCellMouseEnter,
-        onCellMouseUp,
-        onCellContextMenu,
-        onCellEditingStart,
-        onCellEditingStop,
-        contextMenu,
-        onContextMenuOpenChange,
-        onPasteDialogOpenChange,
-        onPasteWithExpansion,
-        onPasteWithoutExpansion,
-        onCellsCopy,
-        onCellsCut,
-      },
-    }),
-    [
-      dataGridPropsRef,
-      data,
-      columns,
-      defaultColumn,
-      initialState,
+    },
+    initialState,
+    state: {
+      ...dataGridPropsRef.current.state,
       sorting,
       rowSelection,
-      onRowSelectionChange,
-      onSortingChange,
+    },
+    onRowSelectionChange,
+    onSortingChange,
+    columnResizeMode: "onChange",
+    getCoreRowModel: getCoreRowModel(),
+    getSortedRowModel: getSortedRowModel(),
+    meta: {
+      ...dataGridPropsRef.current.meta,
+      dataGridRef,
+      cellMapRef,
       focusedCell,
       editingCell,
       selectionState,
       searchOpen,
+      rowHeight,
       isScrolling,
       readOnly,
+      pasteDialog,
       getIsCellSelected,
       getIsSearchMatch,
       getIsActiveSearchMatch,
+      onRowHeightChange,
+      onRowSelect,
+      onRowsDelete: onRowsDeleteProp ? onRowsDelete : undefined,
       onDataUpdate,
       onFilesUpload,
       onFilesDelete,
-      onRowsDeleteProp,
-      onRowsDelete,
       onColumnClick,
       onCellClick,
       onCellDoubleClick,
@@ -2046,19 +2015,31 @@ function useDataGrid<TData>({
       onCellEditingStop,
       contextMenu,
       onContextMenuOpenChange,
-      rowHeight,
-      onRowHeightChange,
-      onRowSelect,
-      pasteDialog,
       onPasteDialogOpenChange,
       onPasteWithExpansion,
       onPasteWithoutExpansion,
       onCellsCopy,
       onCellsCut,
-    ],
-  );
+      onFill: onFillRef.current,
+      fillState: {
+        active: isFilling,
+        startCell: fillStart,
+        currentCell: fillEnd,
+        direction: null,
+        range: fillStart && fillEnd ? { start: fillStart, end: fillEnd } : null,
+      },
+      onFillStart: (event) => {
+        // This is now handled by onFillMouseDown passed to the handle
+      },
+      onFillMouseDown,
+      onFillMouseEnter,
+    },
+  });
 
-  const table = useReactTable(tableOptions);
+
+
+
+
 
   if (!tableRef.current) {
     tableRef.current = table;

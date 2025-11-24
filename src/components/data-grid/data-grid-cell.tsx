@@ -43,9 +43,19 @@ export function DataGridCell<TData>({ cell, table }: DataGridCellProps<TData>) {
   const cellOpts = cell.column.columnDef.meta?.cell;
   const variant = cellOpts?.variant ?? "text";
 
+  const showHandle =
+    !readOnly &&
+    !isEditing &&
+    (meta?.selectionState?.selectionRange
+      ? meta.selectionState.selectionRange.end.rowIndex === rowIndex &&
+        meta.selectionState.selectionRange.end.columnId === columnId
+      : isFocused);
+
+  let content: React.ReactNode;
+
   switch (variant) {
     case "short-text":
-      return (
+      content = (
         <ShortTextCell
           cell={cell}
           table={table}
@@ -57,8 +67,9 @@ export function DataGridCell<TData>({ cell, table }: DataGridCellProps<TData>) {
           readOnly={readOnly}
         />
       );
+      break;
     case "long-text":
-      return (
+      content = (
         <LongTextCell
           cell={cell}
           table={table}
@@ -70,8 +81,9 @@ export function DataGridCell<TData>({ cell, table }: DataGridCellProps<TData>) {
           readOnly={readOnly}
         />
       );
+      break;
     case "number":
-      return (
+      content = (
         <NumberCell
           cell={cell}
           table={table}
@@ -83,8 +95,9 @@ export function DataGridCell<TData>({ cell, table }: DataGridCellProps<TData>) {
           readOnly={readOnly}
         />
       );
+      break;
     case "url":
-      return (
+      content = (
         <UrlCell
           cell={cell}
           table={table}
@@ -96,8 +109,9 @@ export function DataGridCell<TData>({ cell, table }: DataGridCellProps<TData>) {
           readOnly={readOnly}
         />
       );
+      break;
     case "checkbox":
-      return (
+      content = (
         <CheckboxCell
           cell={cell}
           table={table}
@@ -108,8 +122,9 @@ export function DataGridCell<TData>({ cell, table }: DataGridCellProps<TData>) {
           readOnly={readOnly}
         />
       );
+      break;
     case "select":
-      return (
+      content = (
         <SelectCell
           cell={cell}
           table={table}
@@ -121,8 +136,9 @@ export function DataGridCell<TData>({ cell, table }: DataGridCellProps<TData>) {
           readOnly={readOnly}
         />
       );
+      break;
     case "multi-select":
-      return (
+      content = (
         <MultiSelectCell
           cell={cell}
           table={table}
@@ -134,8 +150,9 @@ export function DataGridCell<TData>({ cell, table }: DataGridCellProps<TData>) {
           readOnly={readOnly}
         />
       );
+      break;
     case "date":
-      return (
+      content = (
         <DateCell
           cell={cell}
           table={table}
@@ -147,8 +164,9 @@ export function DataGridCell<TData>({ cell, table }: DataGridCellProps<TData>) {
           readOnly={readOnly}
         />
       );
+      break;
     case "file":
-      return (
+      content = (
         <FileCell
           cell={cell}
           table={table}
@@ -160,9 +178,10 @@ export function DataGridCell<TData>({ cell, table }: DataGridCellProps<TData>) {
           readOnly={readOnly}
         />
       );
+      break;
 
     default:
-      return (
+      content = (
         <ShortTextCell
           cell={cell}
           table={table}
@@ -174,5 +193,24 @@ export function DataGridCell<TData>({ cell, table }: DataGridCellProps<TData>) {
           readOnly={readOnly}
         />
       );
+      break;
   }
+
+  return (
+    <div
+      className="relative w-full h-full"
+      data-row-index={rowIndex}
+      data-column-id={columnId}
+      onMouseEnter={() => meta?.onFillMouseEnter?.(rowIndex, columnId)}
+    >
+      {content}
+      {showHandle && (
+        // biome-ignore lint/a11y/noStaticElementInteractions: handle interaction
+        <div
+          className="absolute bottom-[-3px] right-[-3px] w-2.5 h-2.5 bg-blue-500 border border-white cursor-crosshair z-20"
+          onMouseDown={(e) => meta?.onFillMouseDown?.(e, rowIndex, columnId)}
+        />
+      )}
+    </div>
+  );
 }

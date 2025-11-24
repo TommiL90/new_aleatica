@@ -51,6 +51,11 @@ export interface UpdateCell {
   value: unknown;
 }
 
+export interface FillEvent {
+  sourceRange: CellRange;
+  targetRange: CellRange;
+}
+
 declare module "@tanstack/react-table" {
   // biome-ignore lint/correctness/noUnusedVariables: TData and TValue are used in the ColumnMeta interface
   interface ColumnMeta<TData extends RowData, TValue> {
@@ -127,6 +132,15 @@ declare module "@tanstack/react-table" {
     ) => void;
     onCellsCopy?: () => void;
     onCellsCut?: () => void;
+    onFill?: (event: FillEvent) => void;
+    fillState?: FillState;
+    onFillStart?: (event: React.MouseEvent) => void;
+    onFillMouseDown?: (
+      event: React.MouseEvent,
+      rowIndex: number,
+      columnId: string,
+    ) => void;
+    onFillMouseEnter?: (rowIndex: number, columnId: string) => void;
   }
 }
 
@@ -156,6 +170,14 @@ export interface PasteDialogState {
   open: boolean;
   rowsNeeded: number;
   clipboardText: string;
+}
+
+export interface FillState {
+  active: boolean;
+  startCell: CellPosition | null; // The cell where drag started (usually bottom-right of selection)
+  currentCell: CellPosition | null; // The current cell under cursor
+  direction: "horizontal" | "vertical" | null;
+  range: CellRange | null; // The potential fill range to visualize
 }
 
 export type NavigationDirection =

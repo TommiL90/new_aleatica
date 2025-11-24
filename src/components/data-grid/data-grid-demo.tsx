@@ -468,6 +468,97 @@ export function DataGridDemo() {
       );
     }, []);
 
+  const onFill: NonNullable<UseDataGridProps<Person>["onFill"]> =
+    React.useCallback(
+      ({ sourceRange, targetRange }) => {
+        if (!sourceRange || !targetRange) return;
+
+        setData((prev) => {
+          const newData = [...prev];
+
+          // Find column indices
+          const colIds = columns.map(
+            // biome-ignore lint/suspicious/noExplicitAny: column type check
+            (c) => c.id || ((c as any).accessorKey as string),
+          );
+          const startColIdx = colIds.indexOf(sourceRange.start.columnId);
+          const endColIdx = colIds.indexOf(sourceRange.end.columnId);
+
+          // Determine the subset of columns involved in the fill
+          const targetStartColIdx = colIds.indexOf(targetRange.start.columnId);
+          const targetEndColIdx = colIds.indexOf(targetRange.end.columnId);
+
+          const minColIdx = Math.min(targetStartColIdx, targetEndColIdx);
+          const maxColIdx = Math.max(targetStartColIdx, targetEndColIdx);
+
+          const sourceHeight =
+            Math.abs(sourceRange.end.rowIndex - sourceRange.start.rowIndex) + 1;
+
+          // Iterate over target rows
+          const minRow = Math.min(
+            targetRange.start.rowIndex,
+            targetRange.end.rowIndex,
+          );
+          const maxRow = Math.max(
+            targetRange.start.rowIndex,
+            targetRange.end.rowIndex,
+          );
+
+          const srcMinCol = Math.min(startColIdx, endColIdx);
+          const srcWidth = Math.abs(endColIdx - startColIdx) + 1;
+
+          for (let r = minRow; r <= maxRow; r++) {
+            // Iterate over target columns
+            for (let c = minColIdx; c <= maxColIdx; c++) {
+              const column = columns[c];
+              // biome-ignore lint/suspicious/noExplicitAny: column type check
+              if (!column || !("accessorKey" in (column as any))) continue;
+
+              // biome-ignore lint/suspicious/noExplicitAny: accessorKey access
+              const accessorKey = (column as any).accessorKey as keyof Person;
+
+              // Find source value
+              // Map target row to source row (repeating pattern)
+              const relativeRow = r - sourceRange.start.rowIndex;
+              const sourceRowOffset =
+                ((relativeRow % sourceHeight) + sourceHeight) % sourceHeight;
+              const sourceRowIndex =
+                sourceRange.start.rowIndex + sourceRowOffset;
+
+              // Same for columns
+              const relativeColDist = c - srcMinCol;
+              const sourceColOffset =
+                ((relativeColDist % srcWidth) + srcWidth) % srcWidth;
+              const sourceColIndex = srcMinCol + sourceColOffset;
+
+              // Get source value
+              const sourceRow = prev[sourceRowIndex];
+              if (!sourceRow) continue;
+
+              const sourceColumn = columns[sourceColIndex];
+              // biome-ignore lint/suspicious/noExplicitAny: column type check
+              if (!sourceColumn || !("accessorKey" in (sourceColumn as any)))
+                continue;
+
+              // biome-ignore lint/suspicious/noExplicitAny: accessorKey access
+              const sourceAccessor = (sourceColumn as any)
+                .accessorKey as keyof Person;
+              const value = sourceRow[sourceAccessor];
+
+              // Update target
+              const targetRow = newData[r];
+              if (!targetRow) continue;
+
+              newData[r] = { ...targetRow, [accessorKey]: value };
+            }
+          }
+
+          return newData;
+        });
+      },
+      [columns],
+    );
+
   const { table, ...dataGridProps } = useDataGrid({
     columns,
     data,
@@ -477,6 +568,7 @@ export function DataGridDemo() {
     onRowsDelete,
     onFilesUpload,
     onFilesDelete,
+    onFill,
     getRowId: (row) => row.id,
     initialState: {
       columnPinning: {

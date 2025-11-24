@@ -58,6 +58,62 @@ export function DataGrid<TData>({
     [onRowAdd],
   );
 
+  const fillState = meta?.fillState;
+  const [fillIndicatorStyle, setFillIndicatorStyle] =
+    React.useState<React.CSSProperties | null>(null);
+
+  React.useEffect(() => {
+    if (!fillState?.active || !fillState.range || !dataGridRef.current) {
+      setFillIndicatorStyle(null);
+      return;
+    }
+
+    const { start, end } = fillState.range;
+
+    const allColumns = table.getAllColumns();
+    const startColIndex = allColumns.findIndex((c) => c.id === start.columnId);
+    const endColIndex = allColumns.findIndex((c) => c.id === end.columnId);
+
+    if (startColIndex === -1 || endColIndex === -1) return;
+
+    const minColIndex = Math.min(startColIndex, endColIndex);
+    const maxColIndex = Math.max(startColIndex, endColIndex);
+    const minRowIndex = Math.min(start.rowIndex, end.rowIndex);
+    const maxRowIndex = Math.max(start.rowIndex, end.rowIndex);
+
+    const minColId = allColumns[minColIndex]?.id;
+    const maxColId = allColumns[maxColIndex]?.id;
+
+    const grid = dataGridRef.current;
+    // We need to find the cells. Since we added data attributes to the cell wrapper in DataGridCell,
+    // we can query for them.
+    const startCell = grid.querySelector(
+      `[data-row-index="${minRowIndex}"][data-column-id="${minColId}"]`,
+    );
+    const endCell = grid.querySelector(
+      `[data-row-index="${maxRowIndex}"][data-column-id="${maxColId}"]`,
+    );
+
+    if (!startCell || !endCell) {
+      // If cells are not in DOM (virtualized out), we might not be able to draw the box correctly
+      // or we should calculate based on row heights/col widths.
+      // For now, let's just hide it if not visible.
+      setFillIndicatorStyle(null);
+      return;
+    }
+
+    const gridRect = grid.getBoundingClientRect();
+    const startRect = startCell.getBoundingClientRect();
+    const endRect = endCell.getBoundingClientRect();
+
+    setFillIndicatorStyle({
+      top: startRect.top - gridRect.top + grid.scrollTop,
+      left: startRect.left - gridRect.left + grid.scrollLeft,
+      width: endRect.right - startRect.left,
+      height: endRect.bottom - startRect.top,
+    });
+  }, [fillState, dataGridRef, table]);
+
   return (
     <div
       data-slot="grid-wrapper"
@@ -82,6 +138,12 @@ export function DataGrid<TData>({
         }}
         onContextMenu={onGridContextMenu}
       >
+        {fillIndicatorStyle && (
+          <div
+            className="absolute border-2 border-dashed border-primary pointer-events-none z-20"
+            style={fillIndicatorStyle}
+          />
+        )}
         <div
           role="rowgroup"
           data-slot="grid-header"
