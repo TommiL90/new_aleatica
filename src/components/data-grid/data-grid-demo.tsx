@@ -582,7 +582,7 @@ export function DataGridDemo() {
   const height = Math.max(400, windowSize.height - 150);
 
   return (
-    <div className="container flex flex-col gap-4 py-4">
+    <div className="flex flex-col gap-4">
       <div
         role="toolbar"
         aria-orientation="horizontal"
