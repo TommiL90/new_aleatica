@@ -7,6 +7,11 @@ export const env = createEnv({
    * isn't built with invalid env vars.
    */
   server: {
+    API_URL: z.url(),
+    AUTH_SECRET: z.string().min(1),
+    AZURE_AD_CLIENT_ID: z.string().min(1),
+    AZURE_AD_CLIENT_SECRET: z.string().min(1),
+    AZURE_AD_TENANT_ID: z.uuid(),
     NODE_ENV: z
       .enum(["development", "test", "production"])
       .default("development"),
@@ -19,7 +24,7 @@ export const env = createEnv({
    * `NEXT_PUBLIC_`.
    */
   client: {
-    // NEXT_PUBLIC_CLIENTVAR: z.string(),
+    NEXT_PUBLIC_AUTH_URL: z.string().url(),
   },
 
   /**
@@ -27,9 +32,17 @@ export const env = createEnv({
    * middlewares) or client-side so we need to destruct manually.
    */
   runtimeEnv: {
+    // Server
+    API_URL: process.env.API_URL,
+    AUTH_SECRET: process.env.AUTH_SECRET,
+    AZURE_AD_CLIENT_ID: process.env.AZURE_AD_CLIENT_ID,
+    AZURE_AD_CLIENT_SECRET: process.env.AZURE_AD_CLIENT_SECRET,
+    AZURE_AD_TENANT_ID: process.env.AZURE_AD_TENANT_ID,
     DATABASE_URL: process.env.DATABASE_URL,
     NODE_ENV: process.env.NODE_ENV,
-    // NEXT_PUBLIC_CLIENTVAR: process.env.NEXT_PUBLIC_CLIENTVAR,
+
+    // Client
+    NEXT_PUBLIC_AUTH_URL: process.env.NEXT_PUBLIC_AUTH_URL,
   },
   /**
    * Run `build` or `dev` with `SKIP_ENV_VALIDATION` to skip env validation. This is especially
