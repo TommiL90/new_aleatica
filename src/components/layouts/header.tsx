@@ -12,6 +12,7 @@ import {
 } from "@/components/ui/breadcrumb";
 import { Separator } from "@/components/ui/separator";
 import { SidebarTrigger } from "@/components/ui/sidebar";
+import { ModeToggle } from "./mode-toggle";
 
 export const Header = () => {
   const pathname = usePathname();
@@ -56,6 +57,9 @@ export const Header = () => {
           </BreadcrumbList>
         </Breadcrumb>
       </div>
+      <nav className="flex flex-1 items-center md:justify-end md:pr-4">
+        <ModeToggle />
+      </nav>
     </header>
   );
 };
