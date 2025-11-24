@@ -78,22 +78,22 @@ export const navbarList: NavbarItem[] = [
       //   ],
       // },
       {
-        title: "Unidades de Negocio",
+        title: "Ud. Negocio",
         description: "Información de unidad de negocios",
         // Submenú 1.1.1 permiso por submenú
         permission: ["read", "MtBusinessUnit"],
         secondSubItems: [
           {
-            title: "Maestro Unidades de Negocio",
+            title: "Mtro Ud Neg",
             description: "Informacion de unidad de negocios",
             thirdSubItems: [
               {
-                title: "Unidad de Negocios",
+                title: "Ud. Neg.",
                 description: "Repositorio de unidad de negocios",
                 href: "/maestros/unidades_negocios",
               },
               {
-                title: "Indicadores MR",
+                title: "Indic. MR",
                 description: "Breve texto introductorio del menú",
                 // Estos indicadores son visualizados por los Especialistas
                 href: "/maestros/desempeno",
@@ -104,45 +104,45 @@ export const navbarList: NavbarItem[] = [
                 href: "/zonas_geograficas/pais",
               },
               {
-                title: "Zonas Geográficas",
+                title: "Zonas Geog.",
                 description: "Breve texto introductorio del menú",
                 href: "/zonas_geograficas/zonas",
               },
               {
-                title: "Administración Competente",
+                title: "Admin. Comp.",
                 description: "Breve texto introductorio del menú",
                 href: "/zonas_geograficas/administracion",
               },
               {
-                title: "Áreas por Unidad de Negocio",
+                title: "Áreas Ud.",
                 description: "Areas de la unidad de negocios",
                 href: "/operaciones/areas_unidad_negocio",
               },
             ],
           },
           {
-            title: "Inventario de Tramos",
+            title: "Inv. Tramos",
             description: "Datos de inventarios de tramos",
             // Submenú 1.1.2 permiso por submenú
             permission: ["read", "MtHighwayIntersection"],
             thirdSubItems: [
               {
-                title: "Inventario Tramos",
+                title: "Inv. Tramos",
                 description: "Inventario de tramos",
                 href: "/elementos_carretera/tramos",
               },
               {
-                title: "Inventario Entronques",
+                title: "Inv Entronq",
                 description: "Inventario de entronques",
                 href: "/elementos_carretera/entronque",
               },
               {
-                title: "Inventario Gaza/Cuerpo",
+                title: "Inv. Gaza",
                 description: "Inventario de gazas / cuerpos",
                 href: "/elementos_carretera/gaza",
               },
               {
-                title: "Inventario Carriles",
+                title: "Inv. Carril",
                 description: "Inventario de carriles",
                 href: "/elementos_carretera/carril",
               },
@@ -155,29 +155,29 @@ export const navbarList: NavbarItem[] = [
             permission: ["read", "MtAccidentRoadSection"],
             thirdSubItems: [
               {
-                title: "Catálogo TCA",
+                title: "Cat. TCA",
                 description: "Inventario de TCAs",
                 href: "/elementos_carretera/tca",
               },
             ],
           },
           {
-            title: "Plan de Cuentas y Grupo de Materiales",
+            title: "Plan/Mat.",
             description: "Plan de Cuentas y Grupo de Materiales",
             permission: ["read", "GeneralAccountPlan"],
             thirdSubItems: [
               {
-                title: "Plan de Cuenta Mayor",
+                title: "Plan Cta My",
                 description: "Plan de Cuenta Mayor",
                 href: "/operaciones/plan_cuenta_mayor",
               },
               {
-                title: "Grupo de Materiales",
+                title: "Gpo. Mater.",
                 description: "Grupo de Materiales",
                 href: "/operaciones/grupo_materiales",
               },
               {
-                title: "Grupo de Familia",
+                title: "Gpo. Fam.",
                 description: "Grupo de Familia",
                 href: "/operaciones/grupo_familia",
               },
@@ -189,27 +189,27 @@ export const navbarList: NavbarItem[] = [
             permission: ["read", "OperatingExpense"],
             thirdSubItems: [
               {
-                title: "Mude 1: Áreas Operativas",
+                title: "M1: Áreas",
                 description: "Mude 1: Áreas Operativas",
                 href: "/operaciones/mude/areas_operativas",
               },
               {
-                title: "Mude 2: Dirección de Gastos",
+                title: "M2: Dir. G.",
                 description: "Mude 2: Dirección de Gastos",
                 href: "/operaciones/mude/direccion_gastos",
               },
               {
-                title: "Mude 3: Concepto de Gastos Operacionales",
+                title: "M3: Gastos",
                 description: "Mude 3: Concepto de Gastos Operacionales",
                 href: "/operaciones/mude/concepto_gastos_operacionales",
               },
               {
-                title: "Mude 2+3: Departamento / Gastos Operacionales",
+                title: "M2+3: Depto",
                 description: "Mude 2+3: Departamento / Gastos Operacionales",
                 href: "/operaciones/mude/departamento_gastos_operacionales",
               },
               {
-                title: "Mude 4: Servicios Subcontratados",
+                title: "M4: Serv.",
                 description: "Mude 4: Servicios Subcontratados",
                 href: "/operaciones/mude/servicios_subcontratados",
               },
@@ -221,7 +221,7 @@ export const navbarList: NavbarItem[] = [
                 href: "/operaciones/mude/gastos_operacionales_servicios_subcontratados",
               },
               {
-                title: "Mude 5: Subcategoría de Gastos Operacionales",
+                title: "M5: Subcat.",
                 description: "Mude 5: Subcategoría de Gastos Operacionales",
                 href: "/operaciones/mude/subcategoria_gastos_operacionales",
               },
@@ -233,7 +233,7 @@ export const navbarList: NavbarItem[] = [
                 href: "/operaciones/mude/servicios_subcontratados_subcategoria_gastos_operacionales",
               },
               {
-                title: "MUDE con Familia de Grupo de Materiales o Servicios",
+                title: "MUDE Fam.",
                 description:
                   "MUDE con Familia de Grupo de Materiales o Servicios",
                 href: "/operaciones/mude/mude_grupo_familia",
@@ -241,34 +241,34 @@ export const navbarList: NavbarItem[] = [
             ],
           },
           {
-            title: "Inventario de Personal",
+            title: "Inv. Pers.",
             description: "Inventario de Personal",
             permission: ["read", "PersonalInventory"],
             thirdSubItems: [
               {
-                title: "Descripción por Centro de Costo",
+                title: "Desc. CeCo",
                 description: "CeCo",
                 href: "/operaciones/descripcion_por_centro_costo",
               },
               {
-                title: "Tipo de posición por Centro de Costo",
+                title: "Tipo Pos.",
                 description: "CeCo",
                 href: "/operaciones/tipo_posicion_por_centro_costo",
               },
               {
-                title: "Clasificación de Cargos de Nómina",
+                title: "Clas. Carg.",
                 description: "Clasificación de Cargos de Nómina",
                 href: "/operaciones/clasificacion_cargos_nomina",
               },
               {
-                title: "Matriz de Dotación de Personal",
+                title: "Matriz Dot.",
                 description: "Matriz de Dotación de Personal",
                 href: "/operaciones/matriz_dotacion_personal",
               },
             ],
           },
           {
-            title: "Repositorio de Equipos y Maquinarias",
+            title: "Rep. Eq/Maq",
             description: "Repositorio de Equipos y Maquinarias",
             permission: ["read", "EquipmentRepository"],
             href: "/operaciones/repositorio_equipos",
@@ -276,44 +276,44 @@ export const navbarList: NavbarItem[] = [
         ],
       },
       {
-        title: "Identificadores",
+        title: "Identif.",
         description: "Principales indicadores del sistema",
         permission: ["read", "MtProjectCategory"],
         // Submenú 1.2 Permisos generales al submenú
         secondSubItems: [
           {
-            title: "Formularios de procesos",
+            title: "Form. Proc.",
             description: "Repositorio de formularios de procesos",
             // Subítem sin Submenú 1.2.1
             href: "/identificadores/formularios",
           },
           {
-            title: "Definición de Actuaciones",
+            title: "Def. Act.",
             description: "subgrupo de actuaciones",
             // Submenú 1.2.2
             thirdSubItems: [
               {
-                title: "Categorías de Proyectos",
+                title: "Cat. Proy.",
                 description: "Repositorio de categorías del Proyecto",
                 href: "/identificadores/definicion_actuaciones/categorias_proyecto",
               },
               {
-                title: "Categorías de Actuación",
+                title: "Cat. Act.",
                 description: "Repositorio de categorías de actuación",
                 href: "/identificadores/definicion_actuaciones/categorias_actuacion",
               },
               {
-                title: "Subcategorías de Actuación",
+                title: "Subcat Act",
                 description: "Repositorio de subcategorías de actuación",
                 href: "/identificadores/definicion_actuaciones/subcategorias_actuacion",
               },
               {
-                title: "Especialidades de Actuación",
+                title: "Espec. Act.",
                 description: "Repositorio de especialidades de actuación",
                 href: "/identificadores/definicion_actuaciones/especialidades_actuacion",
               },
               {
-                title: "Fase/Partida",
+                title: "Fase/Part.",
                 description: "Repositorio de fase/partidas",
                 href: "/identificadores/definicion_actuaciones/departures",
               },
@@ -325,24 +325,24 @@ export const navbarList: NavbarItem[] = [
             // Submenú 1.2.3
             thirdSubItems: [
               {
-                title: "Unidades de seguimiento",
+                title: "Ud. Seguim.",
                 description: "Repositorio de unidades de seguimiento",
                 href: "/identificadores/unidades/unidades_seguimiento",
               },
               {
-                title: "Unidades de medición",
+                title: "Ud. Medic.",
                 description: "Repositorio de unidades de obra",
                 href: "/identificadores/unidades/unidad_obra",
               },
               {
-                title: "Tipos de monedas",
+                title: "Tipos Mon.",
                 description: "Tipos de monedas",
                 href: "/identificadores/unidades/moneda",
               },
             ],
           },
           {
-            title: "Detalle de elementos de inventario",
+            title: "Det. Elem.",
             description: "Detalle de elementos de inventario",
             // Submenú 1.2.4, es posible que se le concedan permisos a Especialistas
             thirdSubItems: [
@@ -352,7 +352,7 @@ export const navbarList: NavbarItem[] = [
                 href: "/identificadores/detalles/posicion",
               },
               {
-                title: "Disposición de defensa",
+                title: "Disp. Def.",
                 description: "Repositorio de disposiciones",
                 href: "/identificadores/detalles/disposicion",
               },
@@ -362,32 +362,32 @@ export const navbarList: NavbarItem[] = [
                 href: "/identificadores/detalles/tipologia",
               },
               {
-                title: "Tipo de Elemento de Estructura",
+                title: "Tipo Elem.",
                 description: "Repositorio de tipologías",
                 href: "/identificadores/detalles/tipo_elemento_estructura",
               },
             ],
           },
           {
-            title: "Prioridad de Intervención",
+            title: "Prior. Int.",
             description: "Repositorio de prioridades",
             href: "/identificadores/prioridad",
           },
         ],
       },
       {
-        title: "Datos Económicos",
+        title: "Datos Econ.",
         description: "Principales indicadores económicos",
         // Submenú 1.3
         permission: ["read", "Projects"],
         secondSubItems: [
           {
-            title: "Tasas de cambio",
+            title: "Tasas Cam.",
             description: "Repositorio de tasas de cambios",
             href: "/datos_economicos/tasaCambio",
           },
           {
-            title: "Tasa de inflacion",
+            title: "Tasa Infl.",
             description: "Repositorio de tasas de cambios",
             href: "/datos_economicos/tasaInflacion",
           },
@@ -404,12 +404,12 @@ export const navbarList: NavbarItem[] = [
         description: "Presupuestos de Mantenimiento Mayor",
         secondSubItems: [
           {
-            title: "Nuevo Presupuesto de Mantenimiento",
+            title: "Nuevo Pres.",
             description: "Crea nuevo presupuesto",
             href: "/proyectos/nuevo",
           },
           {
-            title: "Lista de Presupuestos de Mantenimiento",
+            title: "Lista Pres.",
             description: "Listado de presupuestos en desarrollo",
             href: "/proyectos",
           },
@@ -421,12 +421,12 @@ export const navbarList: NavbarItem[] = [
         permission: ["read", "ProjectOp"],
         secondSubItems: [
           {
-            title: "Nuevo Presupuesto de Operaciones",
+            title: "Nuevo Pres.",
             description: "Crea nuevo presupuesto",
             href: "/operaciones/proyectos/nuevo",
           },
           {
-            title: "Lista de Presupuestos de Operaciones",
+            title: "Lista Pres.",
             description: "Listado de presupuestos en desarrollo",
             href: "/operaciones/proyectos",
           },
@@ -448,25 +448,25 @@ export const navbarList: NavbarItem[] = [
             href: "/catalogos/deterioros",
           },
           {
-            title: "Subunidades simples",
+            title: "Subud Simp",
             description: "Repositorio de subunidades simples",
             permission: ["read", "MtSubspeciality"],
             href: "/catalogos/subunidades_simples",
           },
           {
-            title: "Unidades Simples",
+            title: "Ud. Simples",
             description: "Breve texto introductorio del menú",
             permission: ["read", "SimpleCatalog"],
             href: "/catalogos/udsimples",
           },
           {
-            title: "Subunidades compuestas",
+            title: "Subud Comp",
             description: "Repositorio de subunidades compuestas",
             permission: ["read", "MtSubspeciality"],
             href: "/catalogos/subunidades_compuestas",
           },
           {
-            title: "Unidades Compuestas",
+            title: "Ud. Comp.",
             description: "Breve texto introductorio del menú",
             permission: ["read", "CompositeCatalog"],
             href: "/catalogos/udcompuestos",
@@ -484,25 +484,25 @@ export const navbarList: NavbarItem[] = [
         description: "Catálogo de presupuesto de operaciones",
         secondSubItems: [
           {
-            title: "Catálogo de Materiales",
+            title: "Cat. Mat.",
             description: "Catálogo de Materiales",
             permission: ["read", "MaterialsCatalog"],
             href: "/operaciones/catalogo_materiales",
           },
           {
-            title: "Catálogo de Servicios",
+            title: "Cat. Serv.",
             description: "Catálogo de Servicios",
             permission: ["read", "MaterialsCatalog"],
             href: "/operaciones/catalogo_servicios",
           },
           {
-            title: "Actividades de Conservacion",
+            title: "Act. Cons.",
             description: "Catálogo de actividades de conservacion",
             permission: ["read", "ConservationActivity"],
             href: "/operaciones/actividad_conservacion",
           },
           {
-            title: "Catálogo de Trabajos Compuestos",
+            title: "Cat. Trab.",
             description: "Catálogo de Trabajos Compuestos",
             permission: ["read", "CompositeWork"],
             href: "/operaciones/catalogo_trabajos_compuestos",
@@ -523,22 +523,22 @@ export const navbarList: NavbarItem[] = [
             description: "Reportes preconfigurados de mediciones de proyecto",
             thirdSubItems: [
               {
-                title: "Mediciones de unidades simples por proyectos",
+                title: "Med Ud Simp",
                 description: "Breve texto introductorio del menú",
                 href: "/consultas/mediciones/udsimplesxproyecto",
               },
               {
-                title: "Mediciones de unidades simples consolidadas",
+                title: "Med S Cons",
                 description: "Breve texto introductorio del menú",
                 href: "/consultas/mediciones/udsimplesconsolidadas",
               },
               {
-                title: "Mediciones de unidades compuestas por proyectos",
+                title: "Med Ud Comp",
                 description: "Breve texto introductorio del menú",
                 href: "/consultas/mediciones/udcompuestasxproyecto",
               },
               {
-                title: "Mediciones de unidades compuestas consolidadas",
+                title: "Med C Cons",
                 description: "Breve texto introductorio del menú",
                 href: "/consultas/mediciones/udcompuestasconsolidadas",
               },
@@ -546,21 +546,21 @@ export const navbarList: NavbarItem[] = [
           },
           // bloque eliminado
           {
-            title: "Presupuesto de Planificación", // Titulo modificado
+            title: "Pres. Plan.", // Titulo modificado
             description: "Reportes de presupuesto de proyecto",
             thirdSubItems: [
               {
-                title: "Presupuesto de planificación por proyectos ", // titulo modificado
+                title: "Pres Planif", // titulo modificado
                 description: "Breve texto introductorio del menú",
                 href: "/consultas/presupuesto/presupuestoxproyecto",
               },
               {
-                title: "Presupuesto consolidado entre varios proyectos", // titulo modificado
+                title: "Pres Consol", // titulo modificado
                 description: "Breve texto introductorio del menú",
                 href: "/consultas/presupuesto/presupuesto_consolidado",
               },
               {
-                title: "Ratios de inversión consolidados entre proyectos", // titulo modificado
+                title: "Ratios Inv.", // titulo modificado
                 description: "Breve texto introductorio del menú",
                 permission: ["read", "MtBusinessUnit"], // Esta query edita Uni Negocios
                 href: "/consultas/presupuesto/ratioinversionconsolidados",
@@ -568,16 +568,16 @@ export const navbarList: NavbarItem[] = [
             ],
           },
           {
-            title: "Precios de Planificación", // Titulo modificado
+            title: "Precios Plan.", // Titulo modificado
             description: "Consultas de precios por proyectos",
             thirdSubItems: [
               {
-                title: "Comparacion de precios simples por proyecto",
+                title: "Comp P Simp",
                 description: "Breve texto introductorio del menú",
                 href: "/consultas/precios/simples",
               },
               {
-                title: "Comparacion de precios compuestos por proyecto",
+                title: "Comp P Comp",
                 description: "Breve texto introductorio del menú",
                 href: "/consultas/precios/compuestas",
               },
@@ -590,17 +590,17 @@ export const navbarList: NavbarItem[] = [
         description: "Reportes de presupuesto de proyecto",
         secondSubItems: [
           {
-            title: "Trabajos compuestos ", // titulo modificado
+            title: "Trab. Comp.", // titulo modificado
             description: "Breve texto introductorio del menú",
             href: "/consultas/operaciones/trabajoscompuestos",
           },
           {
-            title: "Presupuesto consolidado por año", // titulo modificado
+            title: "Pres. Año", // titulo modificado
             description: "Breve texto introductorio del menú 2",
             href: "/consultas/operaciones/presupuestoconsolidadoporanio",
           },
           {
-            title: "Reporte Global de Materiales", // titulo modificado
+            title: "Rep. Glob.", // titulo modificado
             description: "Breve texto introductorio del menú 2",
             href: "/consultas/operaciones/reporteglobaldemateriales",
           },
@@ -617,13 +617,13 @@ export const navbarList: NavbarItem[] = [
         href: "/usuarios/perfil",
       },
       {
-        title: "Configuración de Usuarios",
+        title: "Conf. Usr.",
         description: "Defina usuarios y sus privilegios",
         permission: ["read", "User"],
         href: "/usuarios",
       },
       {
-        title: "Roles de Usuario",
+        title: "Roles Usr.",
         description: "Configuración de roles",
         permission: ["read", "Rol"],
         href: "/usuarios/roles",
@@ -635,12 +635,12 @@ export const navbarList: NavbarItem[] = [
         href: "/usuarios/permisos",
       },
       {
-        title: "Ultima actividad",
+        title: "Ult. Activ.",
         description: "Ultima Actividad",
         href: "/usuarios/ultima_actividad",
       },
       {
-        title: "Cerrar Sesión",
+        title: "Cerrar Ses.",
         description: "Salir de su cuenta de usuario",
         href: "#CerrarSesion",
       },
