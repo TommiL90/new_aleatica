@@ -10,8 +10,8 @@ import {
   getTaskPriorityCounts,
   getTaskStatusCounts,
   getTasks,
-} from "./lib/queries";
-import { searchParamsCache } from "./lib/validations";
+} from "../../lib/queries";
+import { searchParamsCache } from "../../lib/validations";
 
 interface IndexPageProps {
   searchParams: Promise<SearchParams>;

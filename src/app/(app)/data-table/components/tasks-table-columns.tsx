@@ -32,8 +32,8 @@ import { formatDate } from "@/lib/format";
 import { getErrorMessage } from "@/lib/handle-error";
 import type { DataTableRowAction } from "@/types/data-table";
 
-import { updateTask } from "../lib/actions";
-import { getPriorityIcon, getStatusIcon } from "../lib/utils";
+import { updateTask } from "../../../lib/actions";
+import { getPriorityIcon, getStatusIcon } from "../../../lib/utils";
 
 interface GetTasksTableColumnsProps {
   statusCounts: Record<Task["status"], number>;
