@@ -1,14 +1,18 @@
 import { SiteHeader } from "@/components/layouts/site-header";
-import { ThemeProvider } from "@/components/providers";
 import { TailwindIndicator } from "@/components/tailwind-indicator";
 import { siteConfig } from "@/config/site";
 import { cn } from "@/lib/utils";
+import { ThemeProvider } from "@/providers/theme-provider";
 
 import "@/styles/globals.css";
 
 import type { Metadata, Viewport } from "next";
+import { Suspense } from "react";
 import { Toaster } from "@/components/ui/sonner";
 import { fontMono, fontSans } from "@/lib/fonts";
+import { CaslProvider } from "@/providers/casl-provider";
+import { QueryProvider } from "@/providers/query-client-provider";
+import SessionProviderForClient from "@/providers/session-provider-for-client";
 
 export const metadata: Metadata = {
   metadataBase: new URL(siteConfig.url),
@@ -78,10 +82,17 @@ export default function RootLayout({ children }: React.PropsWithChildren) {
           enableSystem
           disableTransitionOnChange
         >
-          <div className="relative flex min-h-screen flex-col">
+          {/* <div className="relative flex min-h-screen flex-col">
             <SiteHeader />
             <main className="flex-1">{children}</main>
-          </div>
+          </div> */}
+          <Suspense>
+            <SessionProviderForClient>
+              <CaslProvider>
+                <QueryProvider>{children}</QueryProvider>
+              </CaslProvider>
+            </SessionProviderForClient>
+          </Suspense>
           <TailwindIndicator />
         </ThemeProvider>
         <Toaster />
