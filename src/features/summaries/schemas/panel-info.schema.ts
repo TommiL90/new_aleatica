@@ -1,5 +1,5 @@
 import { z } from "zod";
-import { createApiResponseSchema } from "../common/api-response.schema";
+import { createApiResponseSchema } from "../../../schemas/api-response.schema";
 
 /**
  * ⭐ Schema Zod = Entity

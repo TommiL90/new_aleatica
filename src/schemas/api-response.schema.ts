@@ -1,4 +1,3 @@
-import type { ZodTypeAny } from "zod";
 import { z } from "zod";
 
 /**
@@ -22,7 +21,9 @@ import { z } from "zod";
  * const panelInfo = parsed.data.result; // PanelInfo validado
  * ```
  */
-export function createApiResponseSchema<T extends ZodTypeAny>(resultSchema: T) {
+
+// biome-ignore lint/suspicious/noExplicitAny: <>
+export  function createApiResponseSchema<T extends z.ZodType<any>>(resultSchema: T) {
   return z.object({
     status: z.number().int(),
     result: resultSchema, // ⭐ El contenido real está en result

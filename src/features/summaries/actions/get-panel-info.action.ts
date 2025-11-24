@@ -1,10 +1,10 @@
 "use server";
 
-import { type FetchResult, serverHttpClient } from "@/lib/http";
 import {
   type PanelInfo,
   panelInfoSchema,
-} from "@/schemas/summaries/panel-info.schema";
+} from "@/features/summaries/schemas/panel-info.schema";
+import { type FetchResult, serverHttpClient } from "@/lib/http";
 
 /**
  * Server Action para obtener la información del panel
