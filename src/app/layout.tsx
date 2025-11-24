@@ -7,7 +7,6 @@ import { cn } from "@/lib/utils";
 import "@/styles/globals.css";
 
 import type { Metadata, Viewport } from "next";
-import Script from "next/script";
 import { Toaster } from "@/components/ui/sonner";
 import { fontMono, fontSans } from "@/lib/fonts";
 
@@ -73,11 +72,6 @@ export default function RootLayout({ children }: React.PropsWithChildren) {
           fontMono.variable,
         )}
       >
-        <Script
-          defer
-          data-site-id={siteConfig.url}
-          src="https://assets.onedollarstats.com/stonks.js"
-        />
         <ThemeProvider
           attribute="class"
           defaultTheme="system"
