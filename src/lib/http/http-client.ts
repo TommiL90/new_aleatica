@@ -19,14 +19,36 @@ import {
  *
  * For Client Components with TanStack Query, call Server Actions that use this client.
  *
+ * **NEW**: All methods now accept an optional `token` parameter as the last argument.
+ * If provided, the client will use this token instead of calling `auth()` internally.
+ * This is useful when using with 'use cache: remote' where auth() is not allowed.
+ *
  * @example
  * ```typescript
- * // ✅ Correct: Server Action
+ * // ✅ Correct: Server Action (default behavior - uses auth())
  * 'use server'
  * import { serverHttpClient } from '@/lib/http'
  *
  * export async function getUsers() {
  *   return serverHttpClient.get<User[]>('/User')
+ * }
+ *
+ * // ✅ Correct: Server Action with 'use cache: remote' (pass token explicitly)
+ * 'use server'
+ * import { auth } from '@/lib/auth'
+ * import { serverHttpClient } from '@/lib/http'
+ *
+ * export async function getUsers() {
+ *   const session = await auth() // Get token outside cached function
+ *   const token = session?.user?.accessTokenBank ?? null
+ *
+ *   return fetchUsersCached(token)
+ * }
+ *
+ * async function fetchUsersCached(token: string | null) {
+ *   'use cache: remote'
+ *   // Pass token to avoid calling auth() inside cached function
+ *   return serverHttpClient.get<User[]>('/User', undefined, undefined, token)
  * }
  *
  * // ✅ Correct: Client Component calling Server Action
@@ -57,7 +79,7 @@ class ServerHttpClient {
 
   private constructor(
     baseUrl: string,
-    defaultHeaders: Record<string, string> = {}
+    defaultHeaders: Record<string, string> = {},
   ) {
     if (!baseUrl) {
       throw new Error("API_URL environment variable is not defined");
@@ -74,10 +96,14 @@ class ServerHttpClient {
   }
 
   async sendRequest<TResponse, TBody = unknown>(
-    request: HttpRequest<TBody>
+    request: HttpRequest<TBody>,
   ): Promise<FetchResult<TResponse>> {
     const url = this.buildUrl(request.endpoint);
-    const headers = await this.buildHeaders(request.headers, request.body);
+    const headers = await this.buildHeaders(
+      request.headers,
+      request.body,
+      request.token,
+    );
 
     try {
       // Build request body
@@ -101,13 +127,20 @@ class ServerHttpClient {
       });
 
       if (!response.ok) {
-        const dataError = await response.json();
+        let errorMessage = response.statusText;
+        try {
+          const dataError = (await response.json()) as { message?: string };
+          errorMessage = dataError.message || response.statusText;
+        } catch {
+          // Si no se puede parsear el JSON, usar el statusText
+          errorMessage = response.statusText;
+        }
 
         return {
           status: "error",
           code: response.status,
-          message: dataError.message || response.statusText,
-          error: dataError.message || response.statusText,
+          message: errorMessage,
+          error: errorMessage,
         };
       }
 
@@ -182,11 +215,9 @@ class ServerHttpClient {
 
   private async buildHeaders(
     customHeaders?: Record<string, string>,
-    body?: unknown
+    body?: unknown,
+    providedToken?: string | null,
   ): Promise<HeadersInit> {
-    const session = await auth();
-    const token = session?.user?.accessTokenBank;
-
     const headers: HeadersInit = {
       ...this.defaultHeaders,
       Accept: "application/json",
@@ -194,9 +225,20 @@ class ServerHttpClient {
       ...customHeaders,
     };
 
-    // Agregar token de autorización si existe
-    if (token) {
-      headers.Authorization = `Bearer ${token}`;
+    // Si se proporciona un token explícitamente, usarlo sin llamar a auth()
+    // Esto permite usar serverHttpClient con 'use cache: remote'
+    if (providedToken !== undefined) {
+      if (providedToken) {
+        headers.Authorization = `Bearer ${providedToken}`;
+      }
+    } else {
+      // Comportamiento por defecto: obtener token de auth()
+      // Solo se ejecuta si no se proporciona token explícitamente
+      const session = await auth();
+      const token = session?.user?.accessTokenBank;
+      if (token) {
+        headers.Authorization = `Bearer ${token}`;
+      }
     }
 
     // Solo agregar Content-Type para JSON, no para FormData
@@ -211,13 +253,15 @@ class ServerHttpClient {
   async get<TResponse>(
     endpoint: string,
     options?: NextFetchOptions,
-    headers?: Record<string, string>
+    headers?: Record<string, string>,
+    token?: string | null,
   ): Promise<FetchResult<TResponse>> {
     return await this.sendRequest<TResponse>({
       method: "GET",
       endpoint,
       headers,
       options,
+      token,
     });
   }
 
@@ -225,7 +269,8 @@ class ServerHttpClient {
     endpoint: string,
     body?: TBody,
     options?: NextFetchOptions,
-    headers?: Record<string, string>
+    headers?: Record<string, string>,
+    token?: string | null,
   ): Promise<FetchResult<TResponse>> {
     return await this.sendRequest<TResponse, TBody>({
       method: "POST",
@@ -233,6 +278,7 @@ class ServerHttpClient {
       body,
       headers,
       options,
+      token,
     });
   }
 
@@ -240,7 +286,8 @@ class ServerHttpClient {
     endpoint: string,
     body?: TBody,
     options?: NextFetchOptions,
-    headers?: Record<string, string>
+    headers?: Record<string, string>,
+    token?: string | null,
   ): Promise<FetchResult<TResponse>> {
     return await this.sendRequest<TResponse, TBody>({
       method: "PUT",
@@ -248,6 +295,7 @@ class ServerHttpClient {
       body,
       headers,
       options,
+      token,
     });
   }
 
@@ -255,7 +303,8 @@ class ServerHttpClient {
     endpoint: string,
     body?: TBody,
     options?: NextFetchOptions,
-    headers?: Record<string, string>
+    headers?: Record<string, string>,
+    token?: string | null,
   ): Promise<FetchResult<TResponse>> {
     return await this.sendRequest<TResponse, TBody>({
       method: "PATCH",
@@ -263,25 +312,28 @@ class ServerHttpClient {
       body,
       headers,
       options,
+      token,
     });
   }
 
   async delete<TResponse>(
     endpoint: string,
     options?: NextFetchOptions,
-    headers?: Record<string, string>
+    headers?: Record<string, string>,
+    token?: string | null,
   ): Promise<FetchResult<TResponse>> {
     return await this.sendRequest<TResponse>({
       method: "DELETE",
       endpoint,
       headers,
       options,
+      token,
     });
   }
 
   // Método estático legacy para compatibilidad hacia atrás
   static async execute<TResponse, TBody = unknown>(
-    request: HttpRequest<TBody>
+    request: HttpRequest<TBody>,
   ): Promise<FetchResult<TResponse>> {
     const httpClient = ServerHttpClient.getInstance();
     return await httpClient.sendRequest<TResponse, TBody>(request);

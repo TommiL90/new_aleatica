@@ -1,12 +1,17 @@
-import { Header } from "@/components/layouts/header"
-import { AppSidebar } from "@/components/layouts/sidebar/app-sidebar"
-import { SidebarInset, SidebarProvider } from "@/components/ui/sidebar"
+import { connection } from "next/server";
+import { Header } from "@/components/layouts/header";
+import { AppSidebar } from "@/components/layouts/sidebar/app-sidebar";
+import { SidebarInset, SidebarProvider } from "@/components/ui/sidebar";
 
-export default function AppLayout({
+export default async function AppLayout({
   children,
 }: {
-  children: React.ReactNode
+  children: React.ReactNode;
 }) {
+  // Marcar el layout como dinámico para que todas las páginas hijas
+  // puedan usar 'use cache: remote' correctamente
+  await connection();
+
   return (
     <SidebarProvider>
       <AppSidebar />
@@ -23,5 +28,5 @@ export default function AppLayout({
         </div>
       </SidebarInset>
     </SidebarProvider>
-  )
+  );
 }

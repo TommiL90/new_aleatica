@@ -20,6 +20,12 @@ export type HttpRequest<TBody = unknown> = {
   body?: TBody;
   headers?: Record<string, string>;
   options?: NextFetchOptions;
+  /**
+   * Token de autenticación opcional.
+   * Si se proporciona, no se llamará a auth() internamente.
+   * Útil para usar con 'use cache: remote' donde auth() no está permitido.
+   */
+  token?: string | null;
 };
 
 export type FetchResult<TData> =
