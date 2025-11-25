@@ -116,12 +116,12 @@ function RecursiveMenuItem({
   // If it's a branch node (has children)
   if (isTopLevel) {
     // Top-level collapsible menu item with children
-    // Note: We do NOT use asChild on Collapsible to avoid hydration errors.
-    // Using asChild with complex nesting (li > button > Tooltip) causes
-    // Radix UI's Slot component to render differently on server vs client.
-    // The extra <div> wrapper is semantically valid and has no performance impact.
+    // Note: We use asChild on Collapsible to avoid creating an invalid HTML structure.
+    // Without asChild, Collapsible creates a <div> wrapper around <li> (SidebarMenuItem),
+    // which is invalid HTML (<ul> can only have <li> as direct children).
+    // Using asChild merges Collapsible props into SidebarMenuItem, creating valid HTML.
     return (
-      <Collapsible className="group/collapsible">
+      <Collapsible asChild className="group/collapsible">
         <SidebarMenuItem>
           <SidebarMenuButton tooltip={item.title}>
             {item.icon && <item.icon />}
