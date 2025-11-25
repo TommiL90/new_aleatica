@@ -1,6 +1,10 @@
 import NextAuth from "next-auth";
+import AzureADProvider, {
+  type AzureADProfile,
+} from "next-auth/providers/azure-ad";
 import CredentialProvider from "next-auth/providers/credentials";
 import { env } from "@/env";
+import { getErrorMessage } from "./handle-error";
 
 declare module "next-auth" {
   interface Session {
@@ -33,11 +37,47 @@ type AdminLoginResponse = {
   permisoIds: number[];
 };
 
+interface LoginAzureADResponse {
+  token: string;
+  fechaExpiracion: string;
+  roles: string;
+  permisoIds: number[];
+}
+
 export const { handlers, signIn, signOut, auth } = NextAuth({
   theme: {
     logo: "/images/logo.svg",
   },
   providers: [
+    AzureADProvider({
+      async profile(profile: AzureADProfile, tokens): Promise<any> {
+        const { oid, name, email, preferred_username } = profile;
+        // console.log('TOKENS', tokens)
+        const tokenBankApiResponse = await tokenBankApi(
+          tokens.access_token as string,
+        );
+
+        return {
+          id: oid,
+          name,
+          email: preferred_username,
+          picture: "",
+          accessTokenBank: tokenBankApiResponse?.token,
+          roles: tokenBankApiResponse?.roles,
+          permisoIds: tokenBankApiResponse?.permisoIds,
+          fechaExpiracion: tokenBankApiResponse?.fechaExpiracion,
+        };
+      },
+
+      authorization: {
+        params: {
+          prompt: "login",
+          tenant: env.AZURE_AD_TENANT_ID,
+        },
+      },
+      clientId: env.AZURE_AD_CLIENT_ID,
+      clientSecret: env.AZURE_AD_CLIENT_SECRET,
+    }),
     CredentialProvider({
       name: "Credentials",
       credentials: {
@@ -129,3 +169,32 @@ export const { handlers, signIn, signOut, auth } = NextAuth({
   },
   debug: env.NODE_ENV === "development",
 });
+
+const tokenBankApi = async (azureToken: string) => {
+  try {
+    const res = await fetch(
+      `${env.API_URL}/Authentication/LoginAzureAD`,
+      {
+        method: "GET",
+        headers: {
+          "Content-Type": "application/json",
+          Authorization: `Bearer ${azureToken}`,
+        },
+      },
+    );
+
+    const data = (await res.json()) as DataResponse<LoginAzureADResponse>;
+    console.log("DATAtokenBankApi", data);
+    if (!res.ok) {
+      const errorMessage =
+        data.errorMessage || "Error en la API de autenticación";
+      console.log(errorMessage);
+      return null;
+    }
+    return data.result;
+  } catch (error) {
+    const errorMsg = getErrorMessage(error);
+    console.error(errorMsg);
+    return null;
+  }
+};
