@@ -9,10 +9,11 @@ import "@/styles/globals.css";
 import type { Metadata, Viewport } from "next";
 import { Suspense } from "react";
 import { Toaster } from "@/components/ui/sonner";
-import { fontMono, fontSans } from "@/lib/fonts";
+
 import { CaslProvider } from "@/providers/casl-provider";
 import { QueryProvider } from "@/providers/query-client-provider";
 import SessionProviderForClient from "@/providers/session-provider-for-client";
+import { fontMono, fontSans, fontSerif } from "@/lib/fonts";
 
 export const metadata: Metadata = {
   metadataBase: new URL(siteConfig.url),
@@ -71,9 +72,10 @@ export default function RootLayout({ children }: React.PropsWithChildren) {
       <head />
       <body
         className={cn(
-          "min-h-screen bg-background font-sans antialiased",
           fontSans.variable,
           fontMono.variable,
+          fontSerif.variable,
+          "min-h-screen bg-background font-sans antialiased"
         )}
       >
         <ThemeProvider
