@@ -100,7 +100,7 @@ export const Dashboard: React.FC<DashboardProps> = ({ kpis, budgets }) => {
     <>
       <div className="mb-6">
         <H2>Resumen Ejecutivo</H2>
-        <P className="text-slate-500">
+        <P className="text-muted-foreground">
           Vista general de métricas clave y estado de proyectos.
         </P>
       </div>
