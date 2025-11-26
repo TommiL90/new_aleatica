@@ -1,19 +1,68 @@
-// @ts-nocheck
-
 /**
  * Server Actions Examples using serverHttpClient
  *
- * These examples show how to use the serverHttpClient in Server Actions
- * for CRUD operations with proper error handling and cache invalidation.
+ * These snippets demonstrate how to convert the raw ApiStandardResponse
+ * returned by `serverHttpClient` into the `FetchResult<T>` shape that the UI
+ * layer consumes everywhere else in the app.
+ *
+ * Feel free to copy the `handleRequest` helper into your own actions to avoid
+ * repeating the same success/error boilerplate for every endpoint.
  */
 
 "use server";
 
-import { serverHttpClient } from "@/lib/http";
-import type { ApiResponse } from "@/lib/http/types";
+import { revalidateTag } from "next/cache";
+
+import { getErrorMessage } from "@/lib/handle-error";
+import {
+  type ApiStandardResponse,
+  type FetchResult,
+  HttpClientError,
+  serverHttpClient,
+} from "@/lib/http";
 
 // ============================================
-// Types (example - adjust to your API)
+// Helpers
+// ============================================
+
+type RequestExecutor<T> = () => Promise<ApiStandardResponse<T>>;
+
+async function handleRequest<T>(
+  execute: RequestExecutor<T>,
+): Promise<FetchResult<T>> {
+  try {
+    const response = await execute();
+
+    if (response.status !== 200) {
+      const errorMessage = response.errorMessage ?? "La API retornó un error";
+      return {
+        status: "error",
+        error: errorMessage,
+        code: response.status,
+        message: errorMessage,
+      };
+    }
+
+    return {
+      status: "success",
+      data: response.result ?? (null as T),
+      code: response.status,
+      message: response.errorMessage ?? "Success",
+    };
+  } catch (error) {
+    const message = getErrorMessage(error);
+    const code = error instanceof HttpClientError ? error.statusCode : 500;
+    return {
+      status: "error",
+      error: message,
+      code,
+      message,
+    };
+  }
+}
+
+// ============================================
+// Example domain types
 // ============================================
 
 type User = {
@@ -38,77 +87,42 @@ type UpdateUserInput = {
 // GET: Fetch users
 // ============================================
 
-export async function getUsers(): Promise<ApiResponse<User[]>> {
-  const result = await serverHttpClient.get<User[]>("/User", {
-    next: {
-      tags: ["users"], // Tag for cache invalidation
-      revalidate: 60, // Revalidate every 60 seconds
-    },
-  });
-
-  if (result.status === "error") {
-    return {
-      status: "error",
-      error: result.error,
-    };
-  }
-
-  return {
-    status: "success",
-    data: result.data,
-  };
+export async function getUsers(): Promise<FetchResult<User[]>> {
+  return handleRequest(() =>
+    serverHttpClient.get<User[]>("/User", {
+      next: { tags: ["users"], revalidate: 60 },
+    }),
+  );
 }
 
 // ============================================
-// GET: Fetch single user by ID
+// GET: Fetch single user
 // ============================================
 
-export async function getUserById(id: number): Promise<ApiResponse<User>> {
-  const result = await serverHttpClient.get<User>(`/User/${id}`, {
-    next: {
-      tags: ["users", `user-${id}`],
-    },
-  });
-
-  if (result.status === "error") {
-    return {
-      status: "error",
-      error: result.error,
-    };
-  }
-
-  return {
-    status: "success",
-    data: result.data,
-  };
+export async function getUserById(id: number): Promise<FetchResult<User>> {
+  return handleRequest(() =>
+    serverHttpClient.get<User>(`/User/${id}`, {
+      next: { tags: ["users", `user-${id}`] },
+    }),
+  );
 }
 
 // ============================================
-// POST: Create new user
+// POST: Create user
 // ============================================
 
 export async function createUser(
-  input: CreateUserInput
-): Promise<ApiResponse<User>> {
-  const result = await serverHttpClient.post<User, CreateUserInput>(
-    "/User",
-    input
+  input: CreateUserInput,
+): Promise<FetchResult<User>> {
+  const result = await handleRequest(() =>
+    serverHttpClient.post<User, CreateUserInput>("/User", input),
   );
 
-  if (result.status === "error") {
-    return {
-      status: "error",
-      error: result.error,
-    };
+  if (result.status === "success") {
+    revalidateTag("users");
   }
 
-  // Invalidate users cache after creating
-  // revalidateTag("users"); // Comentado: verificar API de Next.js 16
-
-  return {
-    status: "success",
-    data: result.data,
-  };
+  return result;
 }
 
 // ============================================
@@ -117,28 +131,18 @@ export async function createUser(
 
 export async function updateUser(
   id: number,
-  input: UpdateUserInput
-): Promise<ApiResponse<User>> {
-  const result = await serverHttpClient.put<User, UpdateUserInput>(
-    `/User/${id}`,
-    input
+  input: UpdateUserInput,
+): Promise<FetchResult<User>> {
+  const result = await handleRequest(() =>
+    serverHttpClient.put<User, UpdateUserInput>(`/User/${id}`, input),
   );
 
-  if (result.status === "error") {
-    return {
-      status: "error",
-      error: result.error,
-    };
+  if (result.status === "success") {
+    revalidateTag("users");
+    revalidateTag(`user-${id}`);
   }
 
-  // Invalidate specific user and users list
-  // revalidateTag("users"); // Comentado: verificar API de Next.js 16
-  // revalidateTag(`user-${id}`); // Comentado: verificar API de Next.js 16
-
-  return {
-    status: "success",
-    data: result.data,
-  };
+  return result;
 }
 
 // ============================================
@@ -147,172 +151,106 @@ export async function updateUser(
 
 export async function patchUser(
   id: number,
-  input: Partial<User>
-): Promise<ApiResponse<User>> {
-  const result = await serverHttpClient.patch<User, Partial<User>>(
-    `/User/${id}`,
-    input
+  input: Partial<User>,
+): Promise<FetchResult<User>> {
+  const result = await handleRequest(() =>
+    serverHttpClient.patch<User, Partial<User>>(`/User/${id}`, input),
   );
 
-  if (result.status === "error") {
-    return {
-      status: "error",
-      error: result.error,
-    };
+  if (result.status === "success") {
+    revalidateTag("users");
+    revalidateTag(`user-${id}`);
   }
 
-  // revalidateTag("users"); // Comentado: verificar API de Next.js 16
-  // revalidateTag(`user-${id}`); // Comentado: verificar API de Next.js 16
-
-  return {
-    status: "success",
-    data: result.data,
-  };
+  return result;
 }
 
 // ============================================
 // DELETE: Remove user
 // ============================================
 
-export async function deleteUser(id: number): Promise<ApiResponse<void>> {
-  const result = await serverHttpClient.delete<void>(`/User/${id}`);
+export async function deleteUser(id: number): Promise<FetchResult<void>> {
+  const result = await handleRequest(() =>
+    serverHttpClient.delete<void>(`/User/${id}`),
+  );
 
-  if (result.status === "error") {
-    return {
-      status: "error",
-      error: result.error,
-    };
+  if (result.status === "success") {
+    revalidateTag("users");
+    revalidateTag(`user-${id}`);
   }
 
-  // Invalidate caches
-  // revalidateTag("users"); // Comentado: verificar API de Next.js 16
-  // revalidateTag(`user-${id}`); // Comentado: verificar API de Next.js 16
-
-  return {
-    status: "success",
-  };
+  return result;
 }
 
 // ============================================
-// FormData Example: File upload
+// FormData example
 // ============================================
 
 export async function uploadUserAvatar(
   userId: number,
-  formData: FormData
-): Promise<ApiResponse<{ url: string }>> {
-  // FormData is automatically detected by serverHttpClient
-  const result = await serverHttpClient.post<{ url: string }>(
-    `/User/${userId}/avatar`,
-    formData
+  formData: FormData,
+): Promise<FetchResult<{ url: string }>> {
+  return handleRequest(() =>
+    serverHttpClient.post<{ url: string }>(`/User/${userId}/avatar`, formData),
   );
-
-  if (result.status === "error") {
-    return {
-      status: "error",
-      error: result.error,
-    };
-  }
-
-  // Invalidate user cache
-  // revalidateTag(`user-${userId}`); // Comentado: verificar API de Next.js 16
-
-  return {
-    status: "success",
-    data: result.data,
-  };
 }
 
 // ============================================
-// Error Handling Example with try-catch
+// Error handling example
 // ============================================
 
 export async function getUserWithErrorHandling(
-  id: number
-): Promise<ApiResponse<User>> {
-  try {
-    const result = await serverHttpClient.get<User>(`/User/${id}`);
-
-    if (result.status === "error") {
-      // Log error (you could use a proper logger here)
-      console.error("Failed to fetch user:", result.error);
-
-      return {
-        status: "error",
-        error: result.message || result.error,
-      };
-    }
-
-    return {
-      status: "success",
-      data: result.data,
-    };
-  } catch (error) {
-    // Handle unexpected errors
-    return {
-      status: "error",
-      error:
-        error instanceof Error ? error.message : "An unexpected error occurred",
-    };
-  }
+  id: number,
+): Promise<FetchResult<User>> {
+  return handleRequest(() => serverHttpClient.get<User>(`/User/${id}`));
 }
 
 // ============================================
-// Complex Example: Multi-step operation
+// Multi-step example
 // ============================================
 
 export async function createUserWithProfile(input: {
   user: CreateUserInput;
   profile: { bio: string; avatar?: File };
-}): Promise<ApiResponse<{ user: User; profileUrl: string }>> {
-  // Step 1: Create user
-  const userResult = await serverHttpClient.post<User, CreateUserInput>(
-    "/User",
-    input.user
+}): Promise<FetchResult<{ user: User; profileUrl: string }>> {
+  const userResult = await handleRequest(() =>
+    serverHttpClient.post<User, CreateUserInput>("/User", input.user),
   );
 
   if (userResult.status === "error") {
-    return {
-      status: "error",
-      error: userResult.error,
-    };
+    return userResult;
   }
 
-  const userId = userResult.data.id;
-
-  // Step 2: Create profile
-  const profileResult = await serverHttpClient.post<{ bio: string }>(
-    `/User/${userId}/profile`,
-    { bio: input.profile.bio }
+  const profileResult = await handleRequest(() =>
+    serverHttpClient.post<{ bio: string }>(
+      `/User/${userResult.data.id}/profile`,
+      {
+        bio: input.profile.bio,
+      },
+    ),
   );
 
   if (profileResult.status === "error") {
-    // Rollback: delete user if profile creation fails
-    await serverHttpClient.delete(`/User/${userId}`);
-    return {
-      status: "error",
-      error: profileResult.error,
-    };
+    await serverHttpClient.delete(`/User/${userResult.data.id}`);
+    return profileResult;
   }
 
-  // Step 3: Upload avatar if provided
   let avatarUrl = "";
   if (input.profile.avatar) {
     const formData = new FormData();
     formData.append("avatar", input.profile.avatar);
-
-    const avatarResult = await serverHttpClient.post<{ url: string }>(
-      `/User/${userId}/avatar`,
-      formData
+    const avatarResult = await handleRequest(() =>
+      serverHttpClient.post<{ url: string }>(
+        `/User/${userResult.data.id}/avatar`,
+        formData,
+      ),
     );
-
     if (avatarResult.status === "success") {
       avatarUrl = avatarResult.data.url;
     }
   }
 
-  // Invalidate cache
-  // revalidateTag("users"); // Comentado: verificar API de Next.js 16
+  revalidateTag("users");
 
   return {
     status: "success",
@@ -320,27 +258,19 @@ export async function createUserWithProfile(input: {
       user: userResult.data,
       profileUrl: avatarUrl,
     },
+    code: 200,
+    message: "Success",
   };
 }
 
 // ============================================
-// No-cache Example: Always fresh data
+// No-cache example
 // ============================================
 
-export async function getUsersNoCacheExample(): Promise<ApiResponse<User[]>> {
-  const result = await serverHttpClient.get<User[]>("/User", {
-    cache: "no-store", // Never cache
-  });
-
-  if (result.status === "error") {
-    return {
-      status: "error",
-      error: result.error,
-    };
-  }
-
-  return {
-    status: "success",
-    data: result.data,
-  };
+export async function getUsersNoCacheExample(): Promise<FetchResult<User[]>> {
+  return handleRequest(() =>
+    serverHttpClient.get<User[]>("/User", {
+      cache: "no-store",
+    }),
+  );
 }

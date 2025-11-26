@@ -1,6 +1,7 @@
 "use client";
 
 import { zodResolver } from "@hookform/resolvers/zod";
+import { useQuery } from "@tanstack/react-query";
 import { Loader } from "lucide-react";
 import * as React from "react";
 import {
@@ -54,8 +55,11 @@ import {
   SelectTrigger,
   SelectValue,
 } from "@/components/ui/select";
+import { getAdministrationOptions } from "@/features/masters/administration/actions/get-administration-options";
+import type { AdministrationOption } from "@/features/masters/administration/types";
+import { getCountryOptions } from "@/features/masters/country/actions/get-country-options";
+import type { CountryOption } from "@/features/masters/country/types";
 
-import { getAdministrationOptions, getCountryOptions } from "@/actions/get-master-options";
 import { createBusinessUnit } from "../actions/create-business-unit";
 import { updateBusinessUnit } from "../actions/update-business-unit";
 import type {
@@ -68,7 +72,6 @@ import {
   integerNumber,
   nonNegativeNumber,
 } from "../schemas/business-units";
-import type { AdministrationOption, CountryOption } from "@/actions/get-master-options";
 
 // Extended schema to include UI-only fields and specific validations
 const extendedBusinessUnitFormSchema = businessUnitFormSchema.extend({
@@ -109,35 +112,12 @@ interface BusinessUnitEditDialogProps {
 
 type BusinessUnitFieldPath = FieldPath<BusinessUnitFormValues>;
 
-const trafficFields: { name: BusinessUnitFieldPath; label: string }[] = [
-  { name: "aadt", label: "TDPA" },
-  { name: "aadht", label: "TDPA pesados" },
-];
-
-const ratioFields: { name: BusinessUnitFieldPath; label: string }[] = [
-  { name: "ratioOneYearsBefore", label: "Ratio 1 año antes" },
-  { name: "ratioTwoYearsBefore", label: "Ratio 2 años antes" },
-  { name: "ratiotTreeYearsBefore", label: "Ratio 3 años antes" },
-];
-
-type BusinessUnitWithRelations = BusinessUnitResult & {
-  mtBusinessUnitMtGeographicalAreas?: Array<{
-    mtGeographicalAreaId: number;
-  }>;
-};
-
-// Default empty options - will be populated from server actions
-const defaultCountriesOptions: CountryOption[] = [];
-const defaultAdministrationsOptions: AdministrationOption[] = [];
-
 const parseDate = (value?: string | null) =>
   value ? (value.split("T")[0] ?? "") : "";
 
 const getDefaultValues = (
   businessUnit?: BusinessUnitResult | null,
 ): BusinessUnitFormValues => {
-  const withRelations = businessUnit as BusinessUnitWithRelations | undefined;
-
   const kmTrunkLane = businessUnit?.kmTrunkLane ?? 0;
   const branchLaneKm = businessUnit?.branchLaneKm ?? 0;
   const m2TrunkPavement = businessUnit?.m2TrunkPavement ?? 0;
@@ -209,42 +189,35 @@ export function BusinessUnitEditDialog({
   onOpenChange,
   businessUnit,
 }: BusinessUnitEditDialogProps) {
-  // State for master data options
-  const [countriesOptions, setCountriesOptions] = React.useState<CountryOption[]>(
-    defaultCountriesOptions
-  );
-  const [administrationsOptions, setAdministrationsOptions] = React.useState<
-    AdministrationOption[]
-  >(defaultAdministrationsOptions);
-  const [isLoadingOptions, setIsLoadingOptions] = React.useState(false);
-
-  // Load master data options on dialog open
-  React.useEffect(() => {
-    if (!open) return;
-
-    async function loadMasterOptions() {
-      setIsLoadingOptions(true);
-      try {
-        const [countriesResult, administrationsResult] = await Promise.all([
-          getCountryOptions(),
-          getAdministrationOptions(),
-        ]);
-
-        if (countriesResult.data) {
-          setCountriesOptions(countriesResult.data);
-        }
-        if (administrationsResult.data) {
-          setAdministrationsOptions(administrationsResult.data);
-        }
-      } catch (error) {
-        console.error("Error loading master options:", error);
-      } finally {
-        setIsLoadingOptions(false);
+  const countriesQuery = useQuery({
+    queryKey: ["masters", "countries"],
+    enabled: open,
+    queryFn: async () => {
+      const result = await getCountryOptions();
+      console.log(result);
+      if (result.status === "error" || !result.data) {
+        throw new Error(result.error ?? "Error al cargar los países");
       }
-    }
+      return result.data;
+    },
+  });
 
-    loadMasterOptions();
-  }, [open]);
+  const administrationsQuery = useQuery({
+    queryKey: ["masters", "administrations"],
+    enabled: open,
+    queryFn: async () => {
+      const result = await getAdministrationOptions();
+      if (result.status === "error" || !result.data) {
+        throw new Error(result.error ?? "Error al cargar las administraciones");
+      }
+      return result.data;
+    },
+  });
+
+  const countriesOptions = countriesQuery.data ?? [];
+  const administrationsOptions = administrationsQuery.data ?? [];
+  const isLoadingOptions =
+    countriesQuery.isLoading || administrationsQuery.isLoading;
 
   const defaultValues = React.useMemo(
     () => getDefaultValues(businessUnit),
@@ -381,14 +354,21 @@ export function BusinessUnitEditDialog({
     return administrationsOptions.filter(
       (opt) => opt.countryId === Number(mtCountryId),
     );
-  }, [mtCountryId]);
+  }, [administrationsOptions, mtCountryId]);
 
   return (
     <Dialog open={open} onOpenChange={onOpenChange}>
       <DialogContent className="!max-w-4xl flex h-[90vh] max-h-[90vh] flex-col">
-        <DialogHeader className="border-b pb-4 shrink-0">
+        <pre>
+          <code>
+            {JSON.stringify(countriesQuery.data, null, 2)}
+          </code>
+        </pre>
+        <DialogHeader className="shrink-0 border-b pb-4">
           <DialogTitle className="text-2xl">
-            {businessUnit?.id ? "Editar Unidad de Negocio" : "Crear Unidad de Negocio"}
+            {businessUnit?.id
+              ? "Editar Unidad de Negocio"
+              : "Crear Unidad de Negocio"}
           </DialogTitle>
           <DialogDescription>
             {businessUnit?.id
@@ -406,7 +386,7 @@ export function BusinessUnitEditDialog({
             {/* Section A: Basic Information */}
             <FieldSet>
               <FieldLegend>Información Básica</FieldLegend>
-              <FieldGroup className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
+              <FieldGroup className="grid grid-cols-1 gap-4 md:grid-cols-2 lg:grid-cols-3">
                 {renderInputField("code", "Código", {
                   placeholder: "BU-001",
                 })}
@@ -422,9 +402,7 @@ export function BusinessUnitEditDialog({
                       <Select
                         name={field.name}
                         value={field.value?.toString() ?? ""}
-                        onValueChange={(value) =>
-                          field.onChange(Number(value))
-                        }
+                        onValueChange={(value) => field.onChange(Number(value))}
                       >
                         <SelectTrigger
                           id="country"
@@ -433,24 +411,23 @@ export function BusinessUnitEditDialog({
                           <SelectValue placeholder="Seleccionar país..." />
                         </SelectTrigger>
                         <SelectContent>
-                          {administrationsOptions && administrationsOptions.length > 0 && (
-                            <>
-                              {Array.from(
-                                new Set(administrationsOptions.map((a) => a.countryId))
-                              )
-                                .map((countryId) => ({
-                                  value: countryId,
-                                  label: `País ${countryId}`,
-                                }))
-                                .map((country) => (
-                                  <SelectItem
-                                    key={country.value}
-                                    value={country.value.toString()}
-                                  >
-                                    {country.label}
-                                  </SelectItem>
-                                ))}
-                            </>
+                          {isLoadingOptions ? (
+                            <div className="px-3 py-2 text-muted-foreground text-sm">
+                              Cargando opciones...
+                            </div>
+                          ) : countriesOptions.length > 0 ? (
+                            countriesOptions.map((country) => (
+                              <SelectItem
+                                key={country.value}
+                                value={country.value.toString()}
+                              >
+                                {country.label}
+                              </SelectItem>
+                            ))
+                          ) : (
+                            <div className="px-3 py-2 text-muted-foreground text-sm">
+                              No hay países disponibles
+                            </div>
                           )}
                         </SelectContent>
                       </Select>
@@ -470,7 +447,10 @@ export function BusinessUnitEditDialog({
                   name="state"
                   control={form.control}
                   render={({ field, fieldState }) => (
-                    <Field orientation="horizontal" data-invalid={fieldState.invalid}>
+                    <Field
+                      orientation="horizontal"
+                      data-invalid={fieldState.invalid}
+                    >
                       <FieldLabel htmlFor="state" className="font-normal">
                         Activo
                       </FieldLabel>
@@ -489,8 +469,10 @@ export function BusinessUnitEditDialog({
 
             {/* Section B: Road Infrastructure */}
             <FieldSet>
-              <FieldLegend>Infraestructura Vial - Troncales y Ramales</FieldLegend>
-              <FieldGroup className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
+              <FieldLegend>
+                Infraestructura Vial - Troncales y Ramales
+              </FieldLegend>
+              <FieldGroup className="grid grid-cols-1 gap-4 md:grid-cols-2 lg:grid-cols-3">
                 {renderNumberField("kmTrunkRoad", "Km Troncal")}
                 {renderNumberField("kmTrunkLane", "Km Carril Troncal")}
                 {renderNumberField("kmBranches", "Km Ramales")}
@@ -499,7 +481,7 @@ export function BusinessUnitEditDialog({
                   "kmCarrilTotales",
                   "Km Carril Totales",
                   "0.01",
-                  true
+                  true,
                 )}
               </FieldGroup>
             </FieldSet>
@@ -509,17 +491,17 @@ export function BusinessUnitEditDialog({
             {/* Section C: Pavement */}
             <FieldSet>
               <FieldLegend>Pavimentación</FieldLegend>
-              <FieldGroup className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
+              <FieldGroup className="grid grid-cols-1 gap-4 md:grid-cols-2 lg:grid-cols-3">
                 {renderNumberField("m2TrunkPavement", "M² Pavimento Troncal")}
                 {renderNumberField(
                   "m2PavementBranches",
-                  "M² Pavimento Ramales"
+                  "M² Pavimento Ramales",
                 )}
                 {renderNumberField(
                   "m2PavimentoTotales",
                   "M² Pavimento Totales",
                   "0.01",
-                  true
+                  true,
                 )}
               </FieldGroup>
             </FieldSet>
@@ -529,7 +511,7 @@ export function BusinessUnitEditDialog({
             {/* Section D: Structures */}
             <FieldSet>
               <FieldLegend>Estructuras</FieldLegend>
-              <FieldGroup className="grid grid-cols-1 md:grid-cols-2 gap-4">
+              <FieldGroup className="grid grid-cols-1 gap-4 md:grid-cols-2">
                 {renderNumberField("noStructure", "Número de Estructuras", "1")}
                 {renderNumberField("m2Structure", "M² Estructuras")}
               </FieldGroup>
@@ -540,8 +522,12 @@ export function BusinessUnitEditDialog({
             {/* Section E: Traffic */}
             <FieldSet>
               <FieldLegend>Tráfico</FieldLegend>
-              <FieldGroup className="grid grid-cols-1 md:grid-cols-2 gap-4">
-                {renderNumberField("aadt", "TDPA (Tráfico Promedio Diario)", "1")}
+              <FieldGroup className="grid grid-cols-1 gap-4 md:grid-cols-2">
+                {renderNumberField(
+                  "aadt",
+                  "TDPA (Tráfico Promedio Diario)",
+                  "1",
+                )}
                 {renderNumberField("aadht", "TDPA Pesados", "1")}
               </FieldGroup>
             </FieldSet>
@@ -554,13 +540,21 @@ export function BusinessUnitEditDialog({
               <FieldDescription>
                 Valores opcionales con máximo 2 decimales
               </FieldDescription>
-              <FieldGroup className="grid grid-cols-1 md:grid-cols-3 gap-4">
-                {renderNumberField("ratioOneYearsBefore", "Ratio 1 año antes", "0.01")}
-                {renderNumberField("ratioTwoYearsBefore", "Ratio 2 años antes", "0.01")}
+              <FieldGroup className="grid grid-cols-1 gap-4 md:grid-cols-3">
+                {renderNumberField(
+                  "ratioOneYearsBefore",
+                  "Ratio 1 año antes",
+                  "0.01",
+                )}
+                {renderNumberField(
+                  "ratioTwoYearsBefore",
+                  "Ratio 2 años antes",
+                  "0.01",
+                )}
                 {renderNumberField(
                   "ratiotTreeYearsBefore",
                   "Ratio 3 años antes",
-                  "0.01"
+                  "0.01",
                 )}
               </FieldGroup>
             </FieldSet>
@@ -580,9 +574,16 @@ export function BusinessUnitEditDialog({
                   <Field data-invalid={fieldState.invalid}>
                     <FieldLabel>Administraciones</FieldLabel>
                     <div className="space-y-3">
-                      <div className="border rounded-md p-3 max-h-48 overflow-y-auto">
-                        {filteredAdministrationsOptions.length > 0 ? (
-                          <FieldGroup data-slot="checkbox-group" className="gap-2">
+                      <div className="max-h-48 overflow-y-auto rounded-md border p-3">
+                        {isLoadingOptions ? (
+                          <p className="py-2 text-muted-foreground text-sm">
+                            Cargando administraciones...
+                          </p>
+                        ) : filteredAdministrationsOptions.length > 0 ? (
+                          <FieldGroup
+                            data-slot="checkbox-group"
+                            className="gap-2"
+                          >
                             {filteredAdministrationsOptions.map((option) => (
                               <Field
                                 key={option.value}
@@ -601,9 +602,12 @@ export function BusinessUnitEditDialog({
                                       .filter(Boolean)
                                       .map(String);
                                     const updated = checked
-                                      ? [...currentValues, option.value.toString()]
+                                      ? [
+                                          ...currentValues,
+                                          option.value.toString(),
+                                        ]
                                       : currentValues.filter(
-                                          (v) => v !== option.value.toString()
+                                          (v) => v !== option.value.toString(),
                                         );
                                     field.onChange(updated.join(","));
                                   }}
@@ -619,8 +623,9 @@ export function BusinessUnitEditDialog({
                             ))}
                           </FieldGroup>
                         ) : (
-                          <p className="text-sm text-muted-foreground py-2">
-                            Selecciona un país para ver las administraciones disponibles
+                          <p className="py-2 text-muted-foreground text-sm">
+                            Selecciona un país para ver las administraciones
+                            disponibles
                           </p>
                         )}
                       </div>
@@ -635,7 +640,7 @@ export function BusinessUnitEditDialog({
           </form>
         </ScrollArea>
 
-        <DialogFooter className="border-t pt-4 px-6 pb-4 shrink-0 flex gap-3 justify-end">
+        <DialogFooter className="flex shrink-0 justify-end gap-3 border-t px-6 pt-4 pb-4">
           <Button
             type="button"
             variant="outline"

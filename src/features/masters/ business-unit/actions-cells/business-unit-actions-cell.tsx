@@ -1,7 +1,7 @@
 "use client";
 
-import * as React from "react";
 import { Ellipsis } from "lucide-react";
+import * as React from "react";
 
 import { Button } from "@/components/ui/button";
 import {
@@ -15,17 +15,15 @@ import {
   DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu";
 import { BusinessUnitDetailsDialog } from "../modals/business-unit-details-dialog";
-import { DeleteBusinessUnitDialog } from "../modals/delete-business-unit-dialog";
 import { BusinessUnitEditDialog } from "../modals/business-unit-edit-dialog";
+import { DeleteBusinessUnitDialog } from "../modals/delete-business-unit-dialog";
 import type { BusinessUnitResult } from "../schemas/business-units";
 
 interface BusinessUnitActionsCellProps {
   row: BusinessUnitResult;
 }
 
-export function BusinessUnitActionsCell({
-  row,
-}: BusinessUnitActionsCellProps) {
+export function BusinessUnitActionsCell({ row }: BusinessUnitActionsCellProps) {
   const [showDetailsDialog, setShowDetailsDialog] = React.useState(false);
   const [showDeleteDialog, setShowDeleteDialog] = React.useState(false);
   const [showEditDialog, setShowEditDialog] = React.useState(false);

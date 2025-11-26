@@ -9,7 +9,7 @@ export const businessUnitsColumns: ColumnDef<BusinessUnitResult>[] = [
   {
     accessorKey: "code",
     header: ({ column }) => (
-      <ClientDataTableColumnHeader column={column} title="Código"  />
+      <ClientDataTableColumnHeader column={column} title="Código" />
     ),
     cell: ({ row }) => (
       <div>

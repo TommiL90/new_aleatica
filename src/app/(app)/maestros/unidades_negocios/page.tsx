@@ -7,9 +7,9 @@ import { fetchBusinessUnits } from "@/features/masters/ business-unit/actions/fe
 import { UnitBusinessTable } from "./unit-business-table";
 
 const UnidadesNegociosPage = async () => {
-  const response = await fetchBusinessUnits();
+  const businessUnitsResponse = await fetchBusinessUnits();
 
-  if (response.status === "error") {
+  if (businessUnitsResponse.status === "error") {
     return (
       <Shell>
         <section className="space-y-1.5 border-b pb-2">
@@ -19,7 +19,7 @@ const UnidadesNegociosPage = async () => {
     );
   }
 
-  const data = response.data;
+  const data = businessUnitsResponse.data;
 
   return (
     <Shell>

@@ -200,7 +200,6 @@ export function BusinessUnitDetailsDialog({
   );
 }
 
-
 function Section({
   title,
   children,
@@ -259,11 +258,7 @@ interface BadgeListProps {
   variant?: "green" | "amber" | "secondary";
 }
 
-function BadgeList({
-  items,
-  labelKey,
-  variant = "secondary",
-}: BadgeListProps) {
+function BadgeList({ items, labelKey, variant = "secondary" }: BadgeListProps) {
   if (!items.length) return null;
 
   return (
@@ -276,4 +271,3 @@ function BadgeList({
     </div>
   );
 }
-

@@ -1,13 +1,14 @@
 "use server";
 
 import { cacheLife, cacheTag } from "next/cache";
+import { redirect } from "next/navigation";
 import { auth } from "@/lib/auth";
+import { getErrorMessage } from "@/lib/handle-error";
 import {
-  HttpClientError,
   type FetchResult,
+  HttpClientError,
   serverHttpClient,
 } from "@/lib/http";
-import { getErrorMessage } from "@/lib/handle-error";
 import {
   type PaginatedResponse,
   PaginatedResponseSchema,
@@ -17,7 +18,6 @@ import {
   arrayBusinessUnitResultSchema,
   type BusinessUnitResult,
 } from "../schemas/business-units";
-import { redirect } from "next/navigation";
 
 /**
  * Función interna cacheada que realiza el fetch usando serverHttpClient con token.
@@ -41,7 +41,7 @@ async function fetchBusinessUnitsCached(
 ): Promise<FetchResult<ArrayBusinessUnitResult>> {
   "use cache: remote";
   cacheTag("business-units");
-  cacheLife('minutes');
+  cacheLife("minutes");
 
   try {
     const response = await serverHttpClient.get<
@@ -55,8 +55,7 @@ async function fetchBusinessUnitsCached(
 
     if (response.status !== 200 || !response.result) {
       const errorMessage =
-        response.errorMessage ??
-        "Error al obtener las unidades de negocio";
+        response.errorMessage ?? "Error al obtener las unidades de negocio";
       return {
         status: "error",
         error: errorMessage,
@@ -123,8 +122,8 @@ export async function fetchBusinessUnits(): Promise<
   // Obtener el token ANTES de entrar a la función cacheada
   // Esto evita el error de usar headers() dentro de 'use cache: remote'
   const session = await auth();
-  const token = session?.user.accessTokenBank
-  
+  const token = session?.user.accessTokenBank;
+
   if (!token) {
     redirect("/login");
   }

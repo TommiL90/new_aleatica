@@ -1,5 +1,3 @@
-// @ts-nocheck
-
 /**
  * TanStack Query Examples with Server Actions
  *
@@ -332,7 +330,7 @@ export function InfiniteUserList() {
     error,
   } = useInfiniteQuery({
     queryKey: ["users", "infinite"],
-    queryFn: async ({ pageParam }) => {
+    queryFn: async ({ pageParam: _pageParam }) => {
       // You'd need to create this Server Action
       // const result = await getUsersPaginated(pageParam);
       // if (result.status === 'error') throw new Error(result.error);

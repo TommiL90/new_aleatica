@@ -14,8 +14,8 @@ import { useVirtualizer, type Virtualizer } from "@tanstack/react-virtual";
 import * as React from "react";
 import { toast } from "sonner";
 import { DataGridCell } from "@/components/data-grid/data-grid-cell";
-import { getCellKey, getRowHeightValue, parseCellKey } from "@/lib/data-grid";
 import { useFillHandle } from "@/hooks/use-fill-handle";
+import { getCellKey, getRowHeightValue, parseCellKey } from "@/lib/data-grid";
 import type {
   CellPosition,
   CellRange,
@@ -2035,11 +2035,6 @@ function useDataGrid<TData>({
       onFillMouseEnter,
     },
   });
-
-
-
-
-
 
   if (!tableRef.current) {
     tableRef.current = table;
