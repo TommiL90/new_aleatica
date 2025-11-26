@@ -6,6 +6,7 @@ import { getSummaryProjectsInfo } from "@/features/summaries/actions/get-summary
 import type { Data1, Tipo2, Tipo3 } from "@/features/summaries/types";
 import { Dashboard } from "@/features/summaries/components/dashboard";
 import { BudgetList } from "@/features/summaries/components/budget-list";
+import { Shell } from "@/components/shell";
 
 const AppPage = async () => {
   const data = await getPanelInfo();
@@ -26,7 +27,7 @@ const AppPage = async () => {
   const historicalBudgets: Tipo3 = MOCK_DATA_3;
 
   return (
-    <>
+    <Shell className="space-y-6">
       <section>
         <Dashboard kpis={kpis} budgets={activeBudgets} />
       </section>
@@ -49,7 +50,7 @@ const AppPage = async () => {
         <code>{JSON.stringify(data3.data, null, 2)}</code>
         <code>{JSON.stringify(data4.data, null, 2)}</code>
       </pre>
-    </>
+    </Shell>
   );
 };
 
