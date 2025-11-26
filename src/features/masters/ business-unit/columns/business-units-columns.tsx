@@ -9,10 +9,10 @@ export const businessUnitsColumns: ColumnDef<BusinessUnitResult>[] = [
   {
     accessorKey: "code",
     header: ({ column }) => (
-      <ClientDataTableColumnHeader column={column} title="Código" />
+      <ClientDataTableColumnHeader column={column} title="Código"  />
     ),
     cell: ({ row }) => (
-      <div className="flex w-[350px] space-x-2">
+      <div>
         {/* <Badge variant="outline"> {row.original.version}</Badge> */}
         <span>{row.getValue("code")}</span>
       </div>
