@@ -70,6 +70,15 @@
   "overrides": [
     {
       "includes": ["**/*.test.ts"]
+    },
+    {
+      "includes": ["**/*.css"],
+      "linter": {
+        "enabled": false
+      },
+      "formatter": {
+        "enabled": false
+      }
     }
   ],
   "vcs": {
@@ -86,6 +95,6 @@
       "!**/public",
       "!**/.turbo",
       "!**/.next"
-    ]
+    ],
   }
 }
