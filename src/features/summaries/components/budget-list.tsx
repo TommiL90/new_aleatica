@@ -1,7 +1,8 @@
-'use client'
+"use client";
 import { ArrowUpDown, Download, Filter, Search } from "lucide-react";
 import type React from "react";
 import { useState } from "react";
+import { valueFormat } from "@/lib/format";
 import type { BudgetProject } from "../types";
 
 interface BudgetListProps {
@@ -139,7 +140,14 @@ export const BudgetList: React.FC<BudgetListProps> = ({ data, title }) => {
                           <div
                             className="h-full rounded-full bg-indigo-500"
                             style={{
-                              width: `${(parseInt(item.tasksInfo.split("/")[0]) / Math.max(parseInt(item.tasksInfo.split("/")[1]), 1)) * 100}%`,
+                              width: `${
+                                (parseInt(item.tasksInfo.split("/")[0], 10) /
+                                  Math.max(
+                                    parseInt(item.tasksInfo.split("/")[1], 10),
+                                    1,
+                                  )) *
+                                100
+                              }%`,
                             }}
                           />
                         </div>
@@ -147,10 +155,7 @@ export const BudgetList: React.FC<BudgetListProps> = ({ data, title }) => {
                     </td>
                     <td className="px-6 py-4">{getStatusBadge(item.status)}</td>
                     <td className="px-6 py-4 text-right font-medium font-mono text-slate-700">
-                      {new Intl.NumberFormat("es-MX", {
-                        style: "currency",
-                        currency: "MXN",
-                      }).format(parseFloat(item.budgetTotal))}
+                      ${valueFormat(item.budgetTotal)}
                     </td>
                   </tr>
                 ))

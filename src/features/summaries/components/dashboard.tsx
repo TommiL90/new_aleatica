@@ -1,4 +1,4 @@
-'use client'
+"use client";
 import { Briefcase, Hammer, Layers, Package, TrendingUp } from "lucide-react";
 import type React from "react";
 import { useMemo } from "react";
@@ -15,6 +15,7 @@ import {
   XAxis,
   YAxis,
 } from "recharts";
+import { valueFormat } from "@/lib/format";
 import type { Data1, Tipo2 } from "../types";
 
 interface DashboardProps {
@@ -23,15 +24,6 @@ interface DashboardProps {
 }
 
 // Helper to format currency
-const formatCurrency = (value: number) => {
-  return new Intl.NumberFormat("es-MX", {
-    style: "currency",
-    currency: "MXN",
-    minimumFractionDigits: 0,
-    maximumFractionDigits: 0,
-  }).format(value);
-};
-
 // Helper for status colors
 const getStatusColor = (status: string) => {
   switch (status.toLowerCase()) {
@@ -194,7 +186,7 @@ export const Dashboard: React.FC<DashboardProps> = ({ kpis, budgets }) => {
                     boxShadow: "0 4px 6px -1px rgb(0 0 0 / 0.1)",
                   }}
                   formatter={(value: number) => [
-                    formatCurrency(value),
+                    `$${valueFormat(value)}`,
                     "Presupuesto",
                   ]}
                 />

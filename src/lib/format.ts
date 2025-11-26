@@ -21,3 +21,17 @@ export function formatNumber(value: number | undefined, decimals = 2): string {
   if (value === undefined || value === null) return "";
   return Number(value).toFixed(decimals);
 }
+
+
+export const valueFormat = (value: string | number): string => {
+  if (typeof value === 'number') {
+    return value.toLocaleString('es-MX', {
+      minimumFractionDigits: 2,
+      maximumFractionDigits: 2,
+    })
+  }
+  return parseFloat(value).toLocaleString('es-MX', {
+    minimumFractionDigits: 2,
+    maximumFractionDigits: 2,
+  })
+}
