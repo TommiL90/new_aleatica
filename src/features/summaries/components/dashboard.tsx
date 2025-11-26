@@ -28,6 +28,8 @@ import {
   ChartContainer,
   ChartTooltip,
   ChartTooltipContent,
+  ChartLegend,
+  ChartLegendContent,
 } from "@/components/ui/chart";
 import { dictionaryNames } from "@/constants/dictionary";
 import { valueFormat } from "@/lib/format";
@@ -101,8 +103,9 @@ export const Dashboard: React.FC<DashboardProps> = ({ kpis, budgets }) => {
       const normalized = normalizeStatusKey(status);
       // Map to chart key using STATUS_DICTIONARY_MAP
       const chartKey =
-        STATUS_DICTIONARY_MAP[normalized as keyof typeof STATUS_DICTIONARY_MAP] ||
-        normalized;
+        STATUS_DICTIONARY_MAP[
+          normalized as keyof typeof STATUS_DICTIONARY_MAP
+        ] || normalized;
       return {
         name: translateStatusLabel(status),
         statusKey: chartKey,
