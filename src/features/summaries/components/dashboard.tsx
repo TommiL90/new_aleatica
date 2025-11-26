@@ -6,7 +6,6 @@ import {
   Bar,
   BarChart,
   CartesianGrid,
-  Cell,
   Legend,
   Pie,
   PieChart,
@@ -24,6 +23,13 @@ import {
   CardHeader,
   CardTitle,
 } from "@/components/ui/card";
+import {
+  type ChartConfig,
+  ChartContainer,
+  ChartTooltip,
+  ChartTooltipContent,
+} from "@/components/ui/chart";
+import { dictionaryNames } from "@/constants/dictionary";
 import { valueFormat } from "@/lib/format";
 import type { Data1, Tipo2 } from "../types";
 import {
@@ -36,28 +42,35 @@ interface DashboardProps {
   budgets: Tipo2;
 }
 
-// Helper to format currency
-// Helper for status colors
-const getStatusColor = (status: string) => {
-  switch (status.toLowerCase()) {
-    case "approved":
-      return "#10b981"; // Green
-    case "created":
-      return "#3b82f6"; // Blue
-    case "rejected":
-      return "#ef4444"; // Red
-    case "in review":
-      return "#f59e0b"; // Amber
-    default:
-      return "#94a3b8"; // Slate
-  }
-};
-
 type PieEntry = {
   name: string;
   statusKey: string;
   value: number;
+  fill: string;
 };
+
+const chartConfig = {
+  created: {
+    label: dictionaryNames.created,
+    color: "var(--chart-created)",
+  },
+  approved: {
+    label: dictionaryNames.approved,
+    color: "var(--chart-approved)",
+  },
+  rejected: {
+    label: dictionaryNames.rejected,
+    color: "var(--chart-rejected)",
+  },
+  "in review": {
+    label: dictionaryNames.inReview,
+    color: "var(--chart-inReview)",
+  },
+  closed: {
+    label: dictionaryNames.closed,
+    color: "var(--chart-closed)",
+  },
+} satisfies ChartConfig;
 
 export const Dashboard: React.FC<DashboardProps> = ({ kpis, budgets }) => {
   // Calculate aggregate data for charts
@@ -89,6 +102,7 @@ export const Dashboard: React.FC<DashboardProps> = ({ kpis, budgets }) => {
         name: translateStatusLabel(status),
         statusKey: normalized,
         value: byStatus[status],
+        fill: `var(--color-${normalized})`,
       };
     });
 
@@ -167,10 +181,11 @@ export const Dashboard: React.FC<DashboardProps> = ({ kpis, budgets }) => {
         {/* Main Bar Chart */}
         <Card className="border-slate-200 bg-white shadow-sm lg:col-span-2">
           <CardHeader className="border-none pb-6">
-                       <CardTitle> Distribución de Presupuesto</CardTitle>
-            <CardDescription>    Monto total por Unidad de Negocio</CardDescription>
-        
-           
+            <CardTitle> Distribución de Presupuesto</CardTitle>
+            <CardDescription>
+              {" "}
+              Monto total por Unidad de Negocio
+            </CardDescription>
           </CardHeader>
           <CardContent className="h-80 pt-0">
             <ResponsiveContainer width="100%" height="100%">
@@ -227,37 +242,25 @@ export const Dashboard: React.FC<DashboardProps> = ({ kpis, budgets }) => {
             <CardTitle> Estado de Proyectos</CardTitle>
             <CardDescription>Desglose por estatus actual</CardDescription>
           </CardHeader>
-          <CardContent className="min-h-[300px] flex-1 pt-0">
-            <ResponsiveContainer width="100%" height="100%">
+          <CardContent className="flex-1 pb-0">
+            <ChartContainer
+              config={chartConfig}
+              className="mx-auto aspect-square max-h-[250px]"
+            >
               <PieChart>
+                <ChartTooltip
+                  cursor={false}
+                  content={<ChartTooltipContent hideLabel />}
+                />
                 <Pie
                   data={chartData.pieData}
-                  cx="50%"
-                  cy="50%"
-                  innerRadius={60}
-                  outerRadius={80}
-                  paddingAngle={5}
                   dataKey="value"
-                >
-                  {chartData.pieData.map((entry, index) => (
-                    <Cell
-                      key={`cell-${index}`}
-                      fill={getStatusColor(entry.statusKey ?? entry.name)}
-                      strokeWidth={0}
-                    />
-                  ))}
-                </Pie>
-                <Tooltip
-                  contentStyle={{
-                    backgroundColor: "#fff",
-                    borderRadius: "8px",
-                    border: "1px solid #e2e8f0",
-                    boxShadow: "0 4px 6px -1px rgb(0 0 0 / 0.1)",
-                  }}
+                  nameKey="statusKey"
+                  innerRadius={60}
+                  fill="fill"
                 />
-                <Legend verticalAlign="bottom" height={36} iconType="circle" />
               </PieChart>
-            </ResponsiveContainer>
+            </ChartContainer>
           </CardContent>
         </Card>
       </div>
