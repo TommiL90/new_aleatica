@@ -3,7 +3,7 @@ import Logo from "../../../public/images/logo.svg";
 
 export default function Loading() {
   return (
-    <div className="relative isolate flex min-h-dvh w-full flex-col items-center justify-center overflow-hidden bg-slate-950 px-6 py-16 text-slate-200">
+    <div className="relative isolate flex min-h-dvh w-full flex-col items-center justify-center overflow-hidden bg-primary px-6 py-16 text-slate-200">
       {/* Technical Grid Background (New) */}
       <div className="absolute inset-0 z-0">
         <div className="absolute inset-0 bg-[linear-gradient(to_right,#80808012_1px,transparent_1px),linear-gradient(to_bottom,#80808012_1px,transparent_1px)] bg-size-[24px_24px]" />
@@ -17,7 +17,7 @@ export default function Loading() {
         role="status"
       >
         {/* Original Spinner */}
-        <div className="relative flex h-32 w-32 items-center justify-center rounded-full border border-white/10 bg-slate-900/50 shadow-[0_25px_80px_rgba(15,23,42,0.25)] backdrop-blur-3xl">
+        <div className="relative flex h-32 w-32 items-center justify-center rounded-full border border-white/10 bg-primary/50 shadow-[0_25px_80px_rgba(15,23,42,0.25)] backdrop-blur-3xl">
           <div className="absolute inset-2 rounded-full border border-primary/40" />
           <div className="absolute inset-0 animate-[spin_10s_linear_infinite] rounded-full border border-primary/30 border-dashed" />
           <div className="absolute inset-4 animate-[spin_6s_linear_infinite] rounded-full border border-white/20 border-dashed" />
