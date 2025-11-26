@@ -2,6 +2,7 @@
 import { ArrowUpDown, Download, Filter, Search } from "lucide-react";
 import type React from "react";
 import { useState } from "react";
+import { dictionaryNames } from "@/constants/dictionary";
 import { valueFormat } from "@/lib/format";
 import type { BudgetProject } from "../types";
 
@@ -13,6 +14,7 @@ interface BudgetListProps {
 // Helper for status styling
 const getStatusBadge = (status: string) => {
   let styles = "bg-slate-100 text-slate-800";
+  const normalized = status.toLowerCase();
   switch (status.toLowerCase()) {
     case "approved":
       styles = "bg-emerald-100 text-emerald-800 border-emerald-200";
@@ -34,7 +36,7 @@ const getStatusBadge = (status: string) => {
     <span
       className={`rounded-full border px-2.5 py-1 font-medium text-xs ${styles}`}
     >
-      {status}
+      {dictionaryNames[normalized as keyof typeof dictionaryNames] ?? status}
     </span>
   );
 };

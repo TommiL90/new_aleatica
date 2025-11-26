@@ -15,6 +15,7 @@ import {
   XAxis,
   YAxis,
 } from "recharts";
+import { dictionaryNames } from "@/constants/dictionary";
 import { valueFormat } from "@/lib/format";
 import type { Data1, Tipo2 } from "../types";
 
@@ -38,6 +39,12 @@ const getStatusColor = (status: string) => {
     default:
       return "#94a3b8"; // Slate
   }
+};
+
+type PieEntry = {
+  name: string;
+  statusKey: string;
+  value: number;
 };
 
 export const Dashboard: React.FC<DashboardProps> = ({ kpis, budgets }) => {
@@ -64,10 +71,16 @@ export const Dashboard: React.FC<DashboardProps> = ({ kpis, budgets }) => {
       byStatus[b.status] = (byStatus[b.status] || 0) + 1;
     });
 
-    const pieData = Object.keys(byStatus).map((status) => ({
-      name: status,
-      value: byStatus[status],
-    }));
+    const pieData: PieEntry[] = Object.keys(byStatus).map((status) => {
+      const normalized = status.toLowerCase();
+      const label =
+        dictionaryNames[normalized as keyof typeof dictionaryNames] ?? status;
+      return {
+        name: label,
+        statusKey: normalized,
+        value: byStatus[status],
+      };
+    });
 
     return { barData, pieData };
   }, [budgets]);
@@ -226,7 +239,7 @@ export const Dashboard: React.FC<DashboardProps> = ({ kpis, budgets }) => {
                   {chartData.pieData.map((entry, index) => (
                     <Cell
                       key={`cell-${index}`}
-                      fill={getStatusColor(entry.name)}
+                      fill={getStatusColor(entry.statusKey ?? entry.name)}
                       strokeWidth={0}
                     />
                   ))}
