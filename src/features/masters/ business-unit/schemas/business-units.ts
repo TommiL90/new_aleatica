@@ -75,4 +75,101 @@ export type BusinessUnitResult = z.infer<typeof businessUnitResultSchema>;
 
 export const arrayBusinessUnitResultSchema = z.array(businessUnitResultSchema);
 
-export type ArrayBusinessUnitResult = z.infer<typeof arrayBusinessUnitResultSchema>;
+export type ArrayBusinessUnitResult = z.infer<
+  typeof arrayBusinessUnitResultSchema
+>;
+
+export const nonNegativeNumber = (label: string) =>
+  z.coerce
+    .number()
+    .refine((value) => !Number.isNaN(value), {
+      message: `${label} es requerido`,
+    })
+    .refine((value) => value >= 0, {
+      message: `${label} debe ser mayor o igual a 0`,
+    });
+
+export const integerNumber = (label: string) =>
+  nonNegativeNumber(label).refine((value) => Number.isInteger(value), {
+    message: `${label} debe ser un número entero`,
+  });
+
+export const csvNumericSchema = z
+  .string()
+  .optional()
+  .default("")
+  .refine(
+    (value) =>
+      value
+        .split(",")
+        .map((entry) => entry.trim())
+        .filter(Boolean)
+        .every((entry) => /^\d+$/.test(entry)),
+    {
+      message: "Solo se permiten IDs numéricos separados por comas",
+    },
+  );
+
+export const businessUnitFormSchema = z.object({
+  id: z.number().int().optional(),
+  code: z.string().min(1, "El código es obligatorio"),
+  name: z.string().min(1, "El nombre es obligatorio"),
+  highDate: z.string().min(1, "La fecha de alta es obligatoria"),
+  lowDate: z.string().min(1, "La fecha de baja es obligatoria"),
+  state: z.boolean(),
+  mtCountryId: z.coerce
+    .number()
+    .refine((value) => !Number.isNaN(value) && value > 0, {
+      message: "Selecciona un país",
+    }),
+  kmTrunkRoad: nonNegativeNumber("Km troncal"),
+  kmTrunkLane: nonNegativeNumber("Km carril troncal"),
+  kmBranches: nonNegativeNumber("Km ramales"),
+  branchLaneKm: nonNegativeNumber("Km carril ramales"),
+  m2TrunkPavement: nonNegativeNumber("M² pavimento troncal"),
+  m2PavementBranches: nonNegativeNumber("M² pavimento ramales"),
+  noStructure: integerNumber("Número de estructuras"),
+  m2Structure: nonNegativeNumber("M² de estructuras"),
+  aadt: integerNumber("TDPA"),
+  aadht: integerNumber("TDPA pesados"),
+  ratioOneYearsBefore: nonNegativeNumber("Ratio 1 año antes")
+    .optional()
+    .default(0),
+  ratioTwoYearsBefore: nonNegativeNumber("Ratio 2 años antes")
+    .optional()
+    .default(0),
+  ratiotTreeYearsBefore: nonNegativeNumber("Ratio 3 años antes")
+    .optional()
+    .default(0),
+  geographicalAreas: csvNumericSchema,
+  administrations: csvNumericSchema,
+});
+
+export type BusinessUnitFormValues = z.infer<typeof businessUnitFormSchema>;
+
+export interface BusinessUnitPayload {
+  id: number;
+  disabled: boolean;
+  name: string;
+  code: string;
+  highDate: string;
+  lowDate: string;
+  modificationDate: string;
+  state: boolean;
+  mtCountryId: number;
+  kmTrunkRoad: number;
+  kmTrunkLane: number;
+  kmBranches: number;
+  branchLaneKm: number;
+  m2TrunkPavement: number;
+  m2PavementBranches: number;
+  noStructure: number;
+  m2Structure: number;
+  aadt: number;
+  aadht: number;
+  mtGeographicalAreas: number[];
+  mtAdministrations: number[];
+  ratioOneYearsBefore?: number;
+  ratioTwoYearsBefore?: number;
+  ratiotTreeYearsBefore?: number;
+}

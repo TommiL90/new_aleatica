@@ -16,6 +16,7 @@ import {
 } from "@/components/ui/dropdown-menu";
 import { BusinessUnitDetailsDialog } from "../modals/business-unit-details-dialog";
 import { DeleteBusinessUnitDialog } from "../modals/delete-business-unit-dialog";
+import { BusinessUnitEditDialog } from "../modals/business-unit-edit-dialog";
 import type { BusinessUnitResult } from "../schemas/business-units";
 
 interface BusinessUnitActionsCellProps {
@@ -27,6 +28,7 @@ export function BusinessUnitActionsCell({
 }: BusinessUnitActionsCellProps) {
   const [showDetailsDialog, setShowDetailsDialog] = React.useState(false);
   const [showDeleteDialog, setShowDeleteDialog] = React.useState(false);
+  const [showEditDialog, setShowEditDialog] = React.useState(false);
 
   return (
     <>
@@ -45,7 +47,9 @@ export function BusinessUnitActionsCell({
             Detalles
           </DropdownMenuItem>
           <DropdownMenuSeparator />
-          <DropdownMenuItem>Editar</DropdownMenuItem>
+          <DropdownMenuItem onSelect={() => setShowEditDialog(true)}>
+            Editar
+          </DropdownMenuItem>
           <DropdownMenuSub>
             <DropdownMenuSubTrigger>Estado</DropdownMenuSubTrigger>
             <DropdownMenuSubContent>
@@ -67,6 +71,11 @@ export function BusinessUnitActionsCell({
         businessUnit={row}
         open={showDetailsDialog}
         onOpenChange={setShowDetailsDialog}
+      />
+      <BusinessUnitEditDialog
+        businessUnit={row}
+        open={showEditDialog}
+        onOpenChange={setShowEditDialog}
       />
 
       <DeleteBusinessUnitDialog
