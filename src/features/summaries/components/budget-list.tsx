@@ -2,9 +2,9 @@
 import { ArrowUpDown, Download, Filter, Search } from "lucide-react";
 import type React from "react";
 import { useState } from "react";
-import { dictionaryNames } from "@/constants/dictionary";
 import { valueFormat } from "@/lib/format";
 import type { BudgetProject } from "../types";
+import { translateStatusLabel } from "../utils/status-label";
 
 interface BudgetListProps {
   data: BudgetProject[];
@@ -36,7 +36,7 @@ const getStatusBadge = (status: string) => {
     <span
       className={`rounded-full border px-2.5 py-1 font-medium text-xs ${styles}`}
     >
-      {dictionaryNames[normalized as keyof typeof dictionaryNames] ?? status}
+      {translateStatusLabel(status)}
     </span>
   );
 };

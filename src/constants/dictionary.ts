@@ -123,6 +123,5 @@ export const dictionaryNames = {
   approved: 'Aprobado',
   rejected: 'Rechazado',
   inReview: 'En revisión',
-  'in review': 'En revisión',
   closed: 'Cerrado',
 } as const

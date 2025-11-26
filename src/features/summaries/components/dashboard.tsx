@@ -15,8 +15,8 @@ import {
   XAxis,
   YAxis,
 } from "recharts";
-import { dictionaryNames } from "@/constants/dictionary";
 import { valueFormat } from "@/lib/format";
+import { normalizeStatusKey, translateStatusLabel } from "../utils/status-label";
 import type { Data1, Tipo2 } from "../types";
 
 interface DashboardProps {
@@ -72,11 +72,9 @@ export const Dashboard: React.FC<DashboardProps> = ({ kpis, budgets }) => {
     });
 
     const pieData: PieEntry[] = Object.keys(byStatus).map((status) => {
-      const normalized = status.toLowerCase();
-      const label =
-        dictionaryNames[normalized as keyof typeof dictionaryNames] ?? status;
+      const normalized = normalizeStatusKey(status);
       return {
-        name: label,
+        name: translateStatusLabel(status),
         statusKey: normalized,
         value: byStatus[status],
       };
