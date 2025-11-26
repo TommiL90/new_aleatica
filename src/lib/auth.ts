@@ -126,7 +126,7 @@ export const { handlers, signIn, signOut, auth } = NextAuth({
   ],
   secret: env.AUTH_SECRET,
   pages: {
-    signOut: "/ ",
+    signOut: "/",
     error: "/",
   },
   session: {

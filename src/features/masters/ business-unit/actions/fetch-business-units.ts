@@ -12,6 +12,7 @@ import {
   arrayBusinessUnitResultSchema,
   type BusinessUnitResult,
 } from "../schemas/business-units";
+import { redirect } from "next/navigation";
 
 /**
  * Función interna cacheada que realiza el fetch usando serverHttpClient con token.
@@ -106,7 +107,11 @@ export async function fetchBusinessUnits(): Promise<
   // Obtener el token ANTES de entrar a la función cacheada
   // Esto evita el error de usar headers() dentro de 'use cache: remote'
   const session = await auth();
-  const token = session?.user?.accessTokenBank ?? null;
+  const token = session?.user.accessTokenBank
+  
+  if (!token) {
+    redirect("/login");
+  }
 
   // Llamar a la función cacheada pasando el token como parámetro
   return fetchBusinessUnitsCached(token);
