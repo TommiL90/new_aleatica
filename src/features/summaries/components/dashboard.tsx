@@ -1,14 +1,11 @@
 "use client";
-import { Briefcase, Hammer, Layers, Package, TrendingUp } from "lucide-react";
+import { Briefcase, Hammer, Layers, Package } from "lucide-react";
 import type React from "react";
 import { useMemo } from "react";
 import {
   Bar,
   BarChart,
   CartesianGrid,
-  Legend,
-  Pie,
-  PieChart,
   ResponsiveContainer,
   Tooltip,
   XAxis,
@@ -23,15 +20,6 @@ import {
   CardHeader,
   CardTitle,
 } from "@/components/ui/card";
-import {
-  type ChartConfig,
-  ChartContainer,
-  ChartTooltip,
-  ChartTooltipContent,
-  ChartLegend,
-  ChartLegendContent,
-} from "@/components/ui/chart";
-import { dictionaryNames } from "@/constants/dictionary";
 import { valueFormat } from "@/lib/format";
 import type { Data1, Tipo2 } from "../types";
 import {
@@ -39,41 +27,12 @@ import {
   STATUS_DICTIONARY_MAP,
   translateStatusLabel,
 } from "../utils/status-label";
+import { ProjectStatusPieChart } from "./pie-chart";
 
 interface DashboardProps {
   kpis: Data1;
   budgets: Tipo2;
 }
-
-type PieEntry = {
-  name: string;
-  statusKey: string;
-  value: number;
-  fill: string;
-};
-
-const chartConfig = {
-  created: {
-    label: dictionaryNames.created,
-    color: "var(--chart-created)",
-  },
-  approved: {
-    label: dictionaryNames.approved,
-    color: "var(--chart-approved)",
-  },
-  rejected: {
-    label: dictionaryNames.rejected,
-    color: "var(--chart-rejected)",
-  },
-  inReview: {
-    label: dictionaryNames.inReview,
-    color: "var(--chart-inReview)",
-  },
-  closed: {
-    label: dictionaryNames.closed,
-    color: "var(--chart-closed)",
-  },
-} satisfies ChartConfig;
 
 export const Dashboard: React.FC<DashboardProps> = ({ kpis, budgets }) => {
   // Calculate aggregate data for charts
@@ -99,7 +58,7 @@ export const Dashboard: React.FC<DashboardProps> = ({ kpis, budgets }) => {
       byStatus[b.status] = (byStatus[b.status] || 0) + 1;
     });
 
-    const pieData: PieEntry[] = Object.keys(byStatus).map((status) => {
+    const pieData = Object.keys(byStatus).map((status) => {
       const normalized = normalizeStatusKey(status);
       // Map to chart key using STATUS_DICTIONARY_MAP
       const chartKey =
@@ -245,32 +204,7 @@ export const Dashboard: React.FC<DashboardProps> = ({ kpis, budgets }) => {
         </Card>
 
         {/* Status Pie Chart */}
-        <Card className="flex flex-col border-slate-200 bg-white shadow-sm">
-          <CardHeader className="border-none pb-6">
-            <CardTitle> Estado de Proyectos</CardTitle>
-            <CardDescription>Desglose por estatus actual</CardDescription>
-          </CardHeader>
-          <CardContent className="flex-1 pb-0">
-            <ChartContainer
-              config={chartConfig}
-              className="mx-auto aspect-square max-h-[250px]"
-            >
-              <PieChart>
-                <ChartTooltip
-                  cursor={false}
-                  content={<ChartTooltipContent hideLabel />}
-                />
-                <Pie
-                  data={chartData.pieData}
-                  dataKey="value"
-                  nameKey="statusKey"
-                  innerRadius={60}
-                  fill="fill"
-                />
-              </PieChart>
-            </ChartContainer>
-          </CardContent>
-        </Card>
+        <ProjectStatusPieChart data={chartData.pieData} />
       </div>
     </>
   );
