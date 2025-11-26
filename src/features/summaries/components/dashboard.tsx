@@ -34,6 +34,7 @@ import { valueFormat } from "@/lib/format";
 import type { Data1, Tipo2 } from "../types";
 import {
   normalizeStatusKey,
+  STATUS_DICTIONARY_MAP,
   translateStatusLabel,
 } from "../utils/status-label";
 
@@ -62,7 +63,7 @@ const chartConfig = {
     label: dictionaryNames.rejected,
     color: "var(--chart-rejected)",
   },
-  "in review": {
+  inReview: {
     label: dictionaryNames.inReview,
     color: "var(--chart-inReview)",
   },
@@ -98,11 +99,15 @@ export const Dashboard: React.FC<DashboardProps> = ({ kpis, budgets }) => {
 
     const pieData: PieEntry[] = Object.keys(byStatus).map((status) => {
       const normalized = normalizeStatusKey(status);
+      // Map to chart key using STATUS_DICTIONARY_MAP
+      const chartKey =
+        STATUS_DICTIONARY_MAP[normalized as keyof typeof STATUS_DICTIONARY_MAP] ||
+        normalized;
       return {
         name: translateStatusLabel(status),
-        statusKey: normalized,
+        statusKey: chartKey,
         value: byStatus[status],
-        fill: `var(--color-${normalized})`,
+        fill: `var(--color-${chartKey})`,
       };
     });
 

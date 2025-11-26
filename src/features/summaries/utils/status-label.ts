@@ -1,6 +1,6 @@
 import { dictionaryNames } from "@/constants/dictionary";
 
-const STATUS_DICTIONARY_MAP = {
+export const STATUS_DICTIONARY_MAP = {
   approved: "approved",
   created: "created",
   rejected: "rejected",
