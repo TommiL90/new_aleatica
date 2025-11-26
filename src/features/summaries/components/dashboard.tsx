@@ -15,6 +15,7 @@ import {
   XAxis,
   YAxis,
 } from "recharts";
+import { P } from "@/components/typography/p";
 import { Card, CardContent, CardHeader } from "@/components/ui/card";
 import { valueFormat } from "@/lib/format";
 import type { Data1, Tipo2 } from "../types";
@@ -22,6 +23,7 @@ import {
   normalizeStatusKey,
   translateStatusLabel,
 } from "../utils/status-label";
+import { H2 } from "@/components/typography/h2";
 
 interface DashboardProps {
   kpis: Data1;
@@ -121,10 +123,10 @@ export const Dashboard: React.FC<DashboardProps> = ({ kpis, budgets }) => {
   return (
     <>
       <div className="mb-6">
-        <h1 className="font-bold text-2xl text-slate-900">Resumen Ejecutivo</h1>
-        <p className="text-slate-500">
+        <H2>Resumen Ejecutivo</H2>
+        <P className="text-slate-500">
           Vista general de métricas clave y estado de proyectos.
-        </p>
+        </P>
       </div>
 
       {/* KPI Grid */}

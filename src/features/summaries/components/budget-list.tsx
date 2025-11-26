@@ -2,6 +2,8 @@
 import { ArrowUpDown, Download, Filter, Search } from "lucide-react";
 import type React from "react";
 import { useState } from "react";
+import { H2 } from "@/components/typography/h2";
+import { P } from "@/components/typography/p";
 import { valueFormat } from "@/lib/format";
 import type { BudgetProject } from "../types";
 import { translateStatusLabel } from "../utils/status-label";
@@ -53,10 +55,10 @@ export const BudgetList: React.FC<BudgetListProps> = ({ data, title }) => {
     <div className="space-y-4">
       <div className="flex flex-col items-start justify-between gap-4 sm:flex-row sm:items-center">
         <div>
-          <h2 className="font-bold text-2xl text-slate-900">{title}</h2>
-          <p className="text-slate-500">
+          <H2>{title}</H2>
+          <P className="text-slate-500">
             Gestión detallada de partidas presupuestarias
-          </p>
+          </P>
         </div>
         <div className="flex w-full gap-2 sm:w-auto">
           <button className="flex items-center justify-center rounded-lg border border-slate-200 bg-white px-4 py-2 font-medium text-slate-600 text-sm shadow-sm transition-colors hover:bg-slate-50">
