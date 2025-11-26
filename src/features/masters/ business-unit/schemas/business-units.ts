@@ -141,7 +141,6 @@ export const businessUnitFormSchema = z.object({
   ratiotTreeYearsBefore: nonNegativeNumber("Ratio 3 años antes")
     .optional()
     .default(0),
-  geographicalAreas: csvNumericSchema,
   administrations: csvNumericSchema,
 });
 
@@ -167,7 +166,6 @@ export interface BusinessUnitPayload {
   m2Structure: number;
   aadt: number;
   aadht: number;
-  mtGeographicalAreas: number[];
   mtAdministrations: number[];
   ratioOneYearsBefore?: number;
   ratioTwoYearsBefore?: number;

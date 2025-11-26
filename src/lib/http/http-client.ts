@@ -1,7 +1,8 @@
 import { env } from "@/env";
 import { auth } from "@/lib/auth";
+import { HttpClientError } from "./http-error";
 import {
-  type FetchResult,
+  type ApiStandardResponse,
   HttpMethod,
   type HttpRequest,
   type NextFetchOptions,
@@ -97,7 +98,7 @@ class ServerHttpClient {
 
   async sendRequest<TResponse, TBody = unknown>(
     request: HttpRequest<TBody>,
-  ): Promise<FetchResult<TResponse>> {
+  ): Promise<ApiStandardResponse<TResponse>> {
     const url = this.buildUrl(request.endpoint);
     const headers = await this.buildHeaders(
       request.headers,
@@ -105,16 +106,17 @@ class ServerHttpClient {
       request.token,
     );
 
-    try {
-      // Build request body
-      let bodyPayload: BodyInit | undefined;
-      if (request.body instanceof FormData) {
-        bodyPayload = request.body;
-      } else if (request.body) {
-        bodyPayload = JSON.stringify(request.body);
-      }
+    // Build request body
+    let bodyPayload: BodyInit | undefined;
+    if (request.body instanceof FormData) {
+      bodyPayload = request.body;
+    } else if (request.body) {
+      bodyPayload = JSON.stringify(request.body);
+    }
 
-      const response = await fetch(url, {
+    let response: Response;
+    try {
+      response = await fetch(url, {
         method: HttpMethod[request.method],
         credentials: "include",
         headers,
@@ -125,87 +127,43 @@ class ServerHttpClient {
           tags: request.options?.next?.tags,
         },
       });
-
-      if (!response.ok) {
-        let errorMessage = response.statusText;
-        try {
-          const dataError = (await response.json()) as { message?: string };
-          errorMessage = dataError.message || response.statusText;
-        } catch {
-          // Si no se puede parsear el JSON, usar el statusText
-          errorMessage = response.statusText;
-        }
-
-        return {
-          status: "error",
-          code: response.status,
-          message: errorMessage,
-          error: errorMessage,
-        };
-      }
-
-      // Parsear respuesta de la API
-      // La API SIEMPRE devuelve ApiStandardResponse<TResponse>
-      let data: TResponse;
-      let code = response.status;
-      let message = response.statusText;
-
-      const contentType = response.headers.get("content-type");
-
-      if (contentType?.includes("application/json")) {
-        const text = await response.text();
-
-        if (text) {
-          // SIEMPRE parsear como ApiStandardResponse
-          const json = JSON.parse(text) as {
-            status: number;
-            result: TResponse;
-            errorMessage: string | null;
-            exceutionTime: string;
-          };
-
-          // Extraer valores de ApiStandardResponse
-          code = json.status;
-          message = json.errorMessage || "Success";
-
-          // Verificar si es éxito (status 200)
-          if (json.status === 200) {
-            data = json.result;
-          } else {
-            // Error interno de la API
-            return {
-              status: "error",
-              code: json.status,
-              message,
-              error: message,
-            };
-          }
-        } else {
-          // Respuesta vacía (ej: DELETE exitoso sin contenido)
-          data = null as TResponse;
-        }
-      } else {
-        // Sin content-type JSON (raro, pero posible)
-        data = null as TResponse;
-      }
-
-      return {
-        status: "success",
-        data,
-        code,
-        message,
-      };
     } catch (error) {
-      const errorMessage =
+      throw new HttpClientError(
         error instanceof Error
-          ? `Failed to fetch: ${error.message}`
-          : "An unknown error occurred";
+          ? `Failed to fetch ${request.endpoint}: ${error.message}`
+          : `Failed to fetch ${request.endpoint}`,
+        500,
+      );
+    }
+
+    const contentType = response.headers.get("content-type") ?? "";
+    const responseText = await response.text();
+
+    if (!responseText) {
       return {
-        status: "error",
-        code: 500,
-        message: errorMessage,
-        error: errorMessage,
+        status: response.status,
+        result: null as TResponse,
+        errorMessage: null,
+        exceutionTime: "",
       };
+    }
+
+    if (!contentType.includes("application/json")) {
+      throw new HttpClientError(
+        `Expected JSON response but received ${contentType || "unknown"}`,
+        response.status,
+        responseText,
+      );
+    }
+
+    try {
+      return JSON.parse(responseText) as ApiStandardResponse<TResponse>;
+    } catch (error) {
+      throw new HttpClientError(
+        "Failed to parse JSON response",
+        response.status,
+        responseText,
+      );
     }
   }
 
@@ -255,7 +213,7 @@ class ServerHttpClient {
     options?: NextFetchOptions,
     headers?: Record<string, string>,
     token?: string | null,
-  ): Promise<FetchResult<TResponse>> {
+  ): Promise<ApiStandardResponse<TResponse>> {
     return await this.sendRequest<TResponse>({
       method: "GET",
       endpoint,
@@ -271,7 +229,7 @@ class ServerHttpClient {
     options?: NextFetchOptions,
     headers?: Record<string, string>,
     token?: string | null,
-  ): Promise<FetchResult<TResponse>> {
+  ): Promise<ApiStandardResponse<TResponse>> {
     return await this.sendRequest<TResponse, TBody>({
       method: "POST",
       endpoint,
@@ -288,7 +246,7 @@ class ServerHttpClient {
     options?: NextFetchOptions,
     headers?: Record<string, string>,
     token?: string | null,
-  ): Promise<FetchResult<TResponse>> {
+  ): Promise<ApiStandardResponse<TResponse>> {
     return await this.sendRequest<TResponse, TBody>({
       method: "PUT",
       endpoint,
@@ -305,7 +263,7 @@ class ServerHttpClient {
     options?: NextFetchOptions,
     headers?: Record<string, string>,
     token?: string | null,
-  ): Promise<FetchResult<TResponse>> {
+  ): Promise<ApiStandardResponse<TResponse>> {
     return await this.sendRequest<TResponse, TBody>({
       method: "PATCH",
       endpoint,
@@ -321,7 +279,7 @@ class ServerHttpClient {
     options?: NextFetchOptions,
     headers?: Record<string, string>,
     token?: string | null,
-  ): Promise<FetchResult<TResponse>> {
+  ): Promise<ApiStandardResponse<TResponse>> {
     return await this.sendRequest<TResponse>({
       method: "DELETE",
       endpoint,
@@ -334,7 +292,7 @@ class ServerHttpClient {
   // Método estático legacy para compatibilidad hacia atrás
   static async execute<TResponse, TBody = unknown>(
     request: HttpRequest<TBody>,
-  ): Promise<FetchResult<TResponse>> {
+  ): Promise<ApiStandardResponse<TResponse>> {
     const httpClient = ServerHttpClient.getInstance();
     return await httpClient.sendRequest<TResponse, TBody>(request);
   }

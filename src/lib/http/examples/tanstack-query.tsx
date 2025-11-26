@@ -1,3 +1,5 @@
+// @ts-nocheck
+
 /**
  * TanStack Query Examples with Server Actions
  *

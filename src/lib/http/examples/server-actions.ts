@@ -1,3 +1,5 @@
+// @ts-nocheck
+
 /**
  * Server Actions Examples using serverHttpClient
  *

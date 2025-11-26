@@ -4,7 +4,12 @@ import {
   type PanelInfo,
   panelInfoSchema,
 } from "@/features/summaries/schemas/panel-info.schema";
-import { type FetchResult, serverHttpClient } from "@/lib/http";
+import {
+  HttpClientError,
+  type FetchResult,
+  serverHttpClient,
+} from "@/lib/http";
+import { getErrorMessage } from "@/lib/handle-error";
 
 /**
  * Server Action para obtener la información del panel
@@ -13,40 +18,48 @@ import { type FetchResult, serverHttpClient } from "@/lib/http";
  * ⭐ El parsing con Zod ES el mapper - valida, aplica defaults y transforma datos
  */
 export async function getPanelInfo(): Promise<FetchResult<PanelInfo>> {
-  // 1. Llamar API
-  // Ahora serverHttpClient extrae automáticamente 'result' de la respuesta estándar
-  const result = await serverHttpClient.get<PanelInfo>("/Summary/GetPanelInfo");
+  try {
+    const response = await serverHttpClient.get<PanelInfo>(
+      "/Summary/GetPanelInfo",
+    );
 
-  if (result.status === "error") {
+    if (response.status !== 200 || !response.result) {
+      const errorMessage =
+        response.errorMessage ?? "Error al obtener la información del panel";
+      return {
+        status: "error",
+        error: errorMessage,
+        code: response.status,
+        message: errorMessage,
+      };
+    }
+
+    const parsed = panelInfoSchema.safeParse(response.result);
+
+    if (!parsed.success) {
+      const errorMessage = `Error al parsear respuesta: ${parsed.error.message}`;
+      return {
+        status: "error",
+        error: errorMessage,
+        code: 502, // Bad Gateway - el backend retornó datos inválidos
+        message: errorMessage,
+      };
+    }
+
+    return {
+      status: "success",
+      data: parsed.data,
+      code: response.status,
+      message: response.errorMessage ?? "Success",
+    };
+  } catch (error) {
+    const message = getErrorMessage(error);
+    const code = error instanceof HttpClientError ? error.statusCode : 500;
     return {
       status: "error",
-      error: result.error,
-      code: result.code,
-      message: result.message,
+      error: message,
+      code,
+      message,
     };
   }
-
-  // 2. Parsear con Zod
-  // result.data ahora contiene directamente el objeto PanelInfo (sin el wrapper de la API)
-  const parsed = panelInfoSchema.safeParse(result.data);
-
-  if (!parsed.success) {
-    // ⚠️ CRÍTICO: NO usar defaults si falla el parsing
-    // Retornar error controlado para que la UI pueda manejarlo
-    const errorMessage = `Error al parsear respuesta: ${parsed.error.message}`;
-    return {
-      status: "error",
-      error: errorMessage,
-      code: 502, // Bad Gateway - el backend retornó datos inválidos
-      message: errorMessage,
-    };
-  }
-
-  // 3. Los datos ya están parseados y transformados por Zod
-  return {
-    status: "success",
-    data: parsed.data,
-    code: result.code,
-    message: result.message,
-  };
 }
