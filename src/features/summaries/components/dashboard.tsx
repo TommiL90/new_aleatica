@@ -15,15 +15,21 @@ import {
   XAxis,
   YAxis,
 } from "recharts";
+import { H2 } from "@/components/typography/h2";
 import { P } from "@/components/typography/p";
-import { Card, CardContent, CardHeader } from "@/components/ui/card";
+import {
+  Card,
+  CardContent,
+  CardDescription,
+  CardHeader,
+  CardTitle,
+} from "@/components/ui/card";
 import { valueFormat } from "@/lib/format";
 import type { Data1, Tipo2 } from "../types";
 import {
   normalizeStatusKey,
   translateStatusLabel,
 } from "../utils/status-label";
-import { H2 } from "@/components/typography/h2";
 
 interface DashboardProps {
   kpis: Data1;
@@ -161,19 +167,10 @@ export const Dashboard: React.FC<DashboardProps> = ({ kpis, budgets }) => {
         {/* Main Bar Chart */}
         <Card className="border-slate-200 bg-white shadow-sm lg:col-span-2">
           <CardHeader className="border-none pb-6">
-            <div className="flex items-center justify-between">
-              <div>
-                <h3 className="font-bold text-lg text-slate-900">
-                  Distribución de Presupuesto
-                </h3>
-                <p className="text-slate-500 text-sm">
-                  Monto total por Unidad de Negocio
-                </p>
-              </div>
-              <button className="rounded-lg p-2 text-slate-400 transition-colors hover:bg-indigo-50 hover:text-indigo-600">
-                <TrendingUp size={20} />
-              </button>
-            </div>
+                       <CardTitle> Distribución de Presupuesto</CardTitle>
+            <CardDescription>    Monto total por Unidad de Negocio</CardDescription>
+        
+           
           </CardHeader>
           <CardContent className="h-80 pt-0">
             <ResponsiveContainer width="100%" height="100%">
@@ -225,16 +222,10 @@ export const Dashboard: React.FC<DashboardProps> = ({ kpis, budgets }) => {
         </Card>
 
         {/* Status Pie Chart */}
-        <Card className="flex flex-col border-slate-200 bg-white p-6 shadow-sm">
+        <Card className="flex flex-col border-slate-200 bg-white shadow-sm">
           <CardHeader className="border-none pb-6">
-            <div>
-              <h3 className="font-bold text-lg text-slate-900">
-                Estado de Proyectos
-              </h3>
-              <p className="text-slate-500 text-sm">
-                Desglose por estatus actual
-              </p>
-            </div>
+            <CardTitle> Estado de Proyectos</CardTitle>
+            <CardDescription>Desglose por estatus actual</CardDescription>
           </CardHeader>
           <CardContent className="min-h-[300px] flex-1 pt-0">
             <ResponsiveContainer width="100%" height="100%">
