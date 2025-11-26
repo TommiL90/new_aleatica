@@ -15,6 +15,7 @@ import {
   XAxis,
   YAxis,
 } from "recharts";
+import { Card, CardContent, CardHeader } from "@/components/ui/card";
 import { valueFormat } from "@/lib/format";
 import type { Data1, Tipo2 } from "../types";
 import {
@@ -129,44 +130,50 @@ export const Dashboard: React.FC<DashboardProps> = ({ kpis, budgets }) => {
       {/* KPI Grid */}
       <div className="mb-6 grid grid-cols-1 gap-4 md:grid-cols-2 lg:grid-cols-4">
         {kpiCards.map((kpi, idx) => (
-          <div
+          <Card
             key={idx}
-            className="rounded-xl border border-slate-200 bg-white p-6 shadow-sm transition-shadow hover:shadow-md"
+            className="border-slate-200 bg-white shadow-sm transition-shadow hover:shadow-md"
           >
-            <div className="mb-4 flex items-center justify-between">
-              <div className={`rounded-lg p-3 ${kpi.bg}`}>
-                <kpi.icon className={`h-6 w-6 ${kpi.color}`} />
+            <CardHeader className="border-none pb-0">
+              <div className="mb-4 flex items-center justify-between">
+                <div className={`rounded-lg p-3 ${kpi.bg}`}>
+                  <kpi.icon className={`h-6 w-6 ${kpi.color}`} />
+                </div>
+                <span className="rounded-full border border-slate-100 bg-slate-50 px-2 py-1 font-medium text-slate-400 text-xs">
+                  Actualizado
+                </span>
               </div>
-              <span className="rounded-full border border-slate-100 bg-slate-50 px-2 py-1 font-medium text-slate-400 text-xs">
-                Actualizado
-              </span>
-            </div>
-            <h3 className="mb-1 font-bold text-3xl text-slate-900">
-              {kpi.value.toLocaleString()}
-            </h3>
-            <p className="font-medium text-slate-500 text-sm">{kpi.label}</p>
-          </div>
+            </CardHeader>
+            <CardContent className="pt-0">
+              <h3 className="mb-1 font-bold text-3xl text-slate-900">
+                {kpi.value.toLocaleString()}
+              </h3>
+              <p className="font-medium text-slate-500 text-sm">{kpi.label}</p>
+            </CardContent>
+          </Card>
         ))}
       </div>
 
       {/* Charts Section */}
       <div className="grid grid-cols-1 gap-6 lg:grid-cols-3">
         {/* Main Bar Chart */}
-        <div className="rounded-xl border border-slate-200 bg-white p-6 shadow-sm lg:col-span-2">
-          <div className="mb-6 flex items-center justify-between">
-            <div>
-              <h3 className="font-bold text-lg text-slate-900">
-                Distribución de Presupuesto
-              </h3>
-              <p className="text-slate-500 text-sm">
-                Monto total por Unidad de Negocio
-              </p>
+        <Card className="border-slate-200 bg-white shadow-sm lg:col-span-2">
+          <CardHeader className="border-none pb-6">
+            <div className="flex items-center justify-between">
+              <div>
+                <h3 className="font-bold text-lg text-slate-900">
+                  Distribución de Presupuesto
+                </h3>
+                <p className="text-slate-500 text-sm">
+                  Monto total por Unidad de Negocio
+                </p>
+              </div>
+              <button className="rounded-lg p-2 text-slate-400 transition-colors hover:bg-indigo-50 hover:text-indigo-600">
+                <TrendingUp size={20} />
+              </button>
             </div>
-            <button className="rounded-lg p-2 text-slate-400 transition-colors hover:bg-indigo-50 hover:text-indigo-600">
-              <TrendingUp size={20} />
-            </button>
-          </div>
-          <div className="h-80">
+          </CardHeader>
+          <CardContent className="h-80 pt-0">
             <ResponsiveContainer width="100%" height="100%">
               <BarChart
                 data={chartData.barData}
@@ -212,20 +219,22 @@ export const Dashboard: React.FC<DashboardProps> = ({ kpis, budgets }) => {
                 />
               </BarChart>
             </ResponsiveContainer>
-          </div>
-        </div>
+          </CardContent>
+        </Card>
 
         {/* Status Pie Chart */}
-        <div className="flex flex-col rounded-xl border border-slate-200 bg-white p-6 shadow-sm">
-          <div className="mb-6">
-            <h3 className="font-bold text-lg text-slate-900">
-              Estado de Proyectos
-            </h3>
-            <p className="text-slate-500 text-sm">
-              Desglose por estatus actual
-            </p>
-          </div>
-          <div className="min-h-[300px] flex-1">
+        <Card className="flex flex-col border-slate-200 bg-white p-6 shadow-sm">
+          <CardHeader className="border-none pb-6">
+            <div>
+              <h3 className="font-bold text-lg text-slate-900">
+                Estado de Proyectos
+              </h3>
+              <p className="text-slate-500 text-sm">
+                Desglose por estatus actual
+              </p>
+            </div>
+          </CardHeader>
+          <CardContent className="min-h-[300px] flex-1 pt-0">
             <ResponsiveContainer width="100%" height="100%">
               <PieChart>
                 <Pie
@@ -256,8 +265,8 @@ export const Dashboard: React.FC<DashboardProps> = ({ kpis, budgets }) => {
                 <Legend verticalAlign="bottom" height={36} iconType="circle" />
               </PieChart>
             </ResponsiveContainer>
-          </div>
-        </div>
+          </CardContent>
+        </Card>
       </div>
     </>
   );
