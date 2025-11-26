@@ -2,31 +2,20 @@
 import { Briefcase, Hammer, Layers, Package } from "lucide-react";
 import type React from "react";
 import { useMemo } from "react";
-import {
-  Bar,
-  BarChart,
-  CartesianGrid,
-  ResponsiveContainer,
-  Tooltip,
-  XAxis,
-  YAxis,
-} from "recharts";
 import { H2 } from "@/components/typography/h2";
 import { P } from "@/components/typography/p";
 import {
   Card,
   CardContent,
-  CardDescription,
   CardHeader,
-  CardTitle,
 } from "@/components/ui/card";
-import { valueFormat } from "@/lib/format";
 import type { Data1, Tipo2 } from "../types";
 import {
   normalizeStatusKey,
   STATUS_DICTIONARY_MAP,
   translateStatusLabel,
 } from "../utils/status-label";
+import { BudgetBarChart } from "./budget-bar-chart";
 import { ProjectStatusPieChart } from "./pie-chart";
 
 interface DashboardProps {
@@ -146,62 +135,7 @@ export const Dashboard: React.FC<DashboardProps> = ({ kpis, budgets }) => {
       {/* Charts Section */}
       <div className="grid grid-cols-1 gap-6 lg:grid-cols-3">
         {/* Main Bar Chart */}
-        <Card className="border-slate-200 bg-white shadow-sm lg:col-span-2">
-          <CardHeader className="border-none pb-6">
-            <CardTitle> Distribución de Presupuesto</CardTitle>
-            <CardDescription>
-              {" "}
-              Monto total por Unidad de Negocio
-            </CardDescription>
-          </CardHeader>
-          <CardContent className="h-80 pt-0">
-            <ResponsiveContainer width="100%" height="100%">
-              <BarChart
-                data={chartData.barData}
-                margin={{ top: 20, right: 30, left: 20, bottom: 5 }}
-              >
-                <CartesianGrid
-                  strokeDasharray="3 3"
-                  stroke="#e2e8f0"
-                  vertical={false}
-                />
-                <XAxis
-                  dataKey="name"
-                  stroke="#64748b"
-                  fontSize={12}
-                  tickLine={false}
-                  axisLine={false}
-                />
-                <YAxis
-                  stroke="#64748b"
-                  fontSize={12}
-                  tickFormatter={(value) => `$${(value / 1000000).toFixed(0)}M`}
-                  tickLine={false}
-                  axisLine={false}
-                />
-                <Tooltip
-                  cursor={{ fill: "#f8fafc" }}
-                  contentStyle={{
-                    backgroundColor: "#fff",
-                    borderRadius: "8px",
-                    border: "1px solid #e2e8f0",
-                    boxShadow: "0 4px 6px -1px rgb(0 0 0 / 0.1)",
-                  }}
-                  formatter={(value: number) => [
-                    `$${valueFormat(value)}`,
-                    "Presupuesto",
-                  ]}
-                />
-                <Bar
-                  dataKey="value"
-                  fill="#4f46e5"
-                  radius={[4, 4, 0, 0]}
-                  barSize={40}
-                />
-              </BarChart>
-            </ResponsiveContainer>
-          </CardContent>
-        </Card>
+        <BudgetBarChart data={chartData.barData} />
 
         {/* Status Pie Chart */}
         <ProjectStatusPieChart data={chartData.pieData} />
