@@ -21,36 +21,31 @@ interface DataResponse<T> {
 async function fetchCountryOptionsCached(
   token: string | null,
 ): Promise<FetchResult<CountryOption[]>> {
-  // "use cache: remote";
-  // cacheTag("masters-country-options");
-  // cacheLife("minutes");
+  "use cache: remote";
+  cacheTag("masters-country-options");
+  cacheLife("minutes");
 
   try {
     const response = await serverHttpClient.get<DataResponse<MtCountry[]>>(
       "/MtCountry/GetDropdownItems?fieldNameValue=Id&fieldNameText=Name",
-      undefined,
-      undefined,
-      token,
+      { token },
     );
 
-    
-
-    if (!response.result) {
-    
+    if (response.status !== 200 || !response.result) {
       return {
         status: "error",
-        error: response.errorMessage,
+        error:
+          (response.errorMessage as string) ??
+          "Error al cargar los países",
         code: response.status,
-        message: '',
+        message: response.errorMessage ?? "Error",
       };
     }
 
     const options = response.result.map((item) => ({
       label: item.text,
-      value: item.value,
+      value: Number(item.value),
     }));
-
-    console.log(options);
 
     return {
       status: "success",

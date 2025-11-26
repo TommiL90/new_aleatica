@@ -28,7 +28,7 @@ async function fetchAdministrationOptionsCached(
   try {
     const response = await serverHttpClient.get<
       DataResponse<MtAdministration[]>
-    >("/MtAdministration/GetAll", undefined, undefined, token);
+    >("/MtAdministration/GetAll", { token });
 
     if (response.status !== 200 || !response.result?.result) {
       const errorMessage =

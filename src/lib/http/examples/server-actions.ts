@@ -90,7 +90,9 @@ type UpdateUserInput = {
 export async function getUsers(): Promise<FetchResult<User[]>> {
   return handleRequest(() =>
     serverHttpClient.get<User[]>("/User", {
-      next: { tags: ["users"], revalidate: 60 },
+      options: {
+        next: { tags: ["users"], revalidate: 60 },
+      },
     }),
   );
 }
@@ -102,7 +104,9 @@ export async function getUsers(): Promise<FetchResult<User[]>> {
 export async function getUserById(id: number): Promise<FetchResult<User>> {
   return handleRequest(() =>
     serverHttpClient.get<User>(`/User/${id}`, {
-      next: { tags: ["users", `user-${id}`] },
+      options: {
+        next: { tags: ["users", `user-${id}`] },
+      },
     }),
   );
 }
@@ -115,7 +119,7 @@ export async function createUser(
   input: CreateUserInput,
 ): Promise<FetchResult<User>> {
   const result = await handleRequest(() =>
-    serverHttpClient.post<User, CreateUserInput>("/User", input),
+    serverHttpClient.post<User, CreateUserInput>("/User", { body: input }),
   );
 
   if (result.status === "success") {
@@ -134,7 +138,9 @@ export async function updateUser(
   input: UpdateUserInput,
 ): Promise<FetchResult<User>> {
   const result = await handleRequest(() =>
-    serverHttpClient.put<User, UpdateUserInput>(`/User/${id}`, input),
+    serverHttpClient.put<User, UpdateUserInput>(`/User/${id}`, {
+      body: input,
+    }),
   );
 
   if (result.status === "success") {
@@ -154,7 +160,9 @@ export async function patchUser(
   input: Partial<User>,
 ): Promise<FetchResult<User>> {
   const result = await handleRequest(() =>
-    serverHttpClient.patch<User, Partial<User>>(`/User/${id}`, input),
+    serverHttpClient.patch<User, Partial<User>>(`/User/${id}`, {
+      body: input,
+    }),
   );
 
   if (result.status === "success") {
@@ -191,7 +199,9 @@ export async function uploadUserAvatar(
   formData: FormData,
 ): Promise<FetchResult<{ url: string }>> {
   return handleRequest(() =>
-    serverHttpClient.post<{ url: string }>(`/User/${userId}/avatar`, formData),
+    serverHttpClient.post<{ url: string }>(`/User/${userId}/avatar`, {
+      body: formData,
+    }),
   );
 }
 
@@ -214,7 +224,9 @@ export async function createUserWithProfile(input: {
   profile: { bio: string; avatar?: File };
 }): Promise<FetchResult<{ user: User; profileUrl: string }>> {
   const userResult = await handleRequest(() =>
-    serverHttpClient.post<User, CreateUserInput>("/User", input.user),
+    serverHttpClient.post<User, CreateUserInput>("/User", {
+      body: input.user,
+    }),
   );
 
   if (userResult.status === "error") {
@@ -225,7 +237,7 @@ export async function createUserWithProfile(input: {
     serverHttpClient.post<{ bio: string }>(
       `/User/${userResult.data.id}/profile`,
       {
-        bio: input.profile.bio,
+        body: { bio: input.profile.bio },
       },
     ),
   );
@@ -242,7 +254,7 @@ export async function createUserWithProfile(input: {
     const avatarResult = await handleRequest(() =>
       serverHttpClient.post<{ url: string }>(
         `/User/${userResult.data.id}/avatar`,
-        formData,
+        { body: formData },
       ),
     );
     if (avatarResult.status === "success") {
@@ -270,7 +282,7 @@ export async function createUserWithProfile(input: {
 export async function getUsersNoCacheExample(): Promise<FetchResult<User[]>> {
   return handleRequest(() =>
     serverHttpClient.get<User[]>("/User", {
-      cache: "no-store",
+      options: { cache: "no-store" },
     }),
   );
 }

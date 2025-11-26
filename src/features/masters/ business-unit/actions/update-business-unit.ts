@@ -13,7 +13,9 @@ export async function updateBusinessUnit(
   try {
     const response = await serverHttpClient.put<void>(
       `/MtBusinessUnit/Update/${id}`,
-      payload,
+      {
+        body: payload,
+      },
     );
 
     if (response.status !== 200) {

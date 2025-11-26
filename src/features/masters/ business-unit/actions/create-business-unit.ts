@@ -12,7 +12,9 @@ export async function createBusinessUnit(
   try {
     const response = await serverHttpClient.post<void>(
       "/MtBusinessUnit/Create",
-      payload,
+      {
+        body: payload,
+      },
     );
 
     if (response.status !== 200) {

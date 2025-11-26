@@ -46,16 +46,14 @@ async function fetchBusinessUnitsCached(
   try {
     const response = await serverHttpClient.get<
       PaginatedResponse<BusinessUnitResult[]>
-    >(
-      "/MtBusinessUnit/GetAllPaginated?&PageSize=2147483647",
-      undefined,
-      undefined,
+    >("/MtBusinessUnit/GetAllPaginated?&PageSize=2147483647", {
       token,
-    );
+    });
 
     if (response.status !== 200 || !response.result) {
       const errorMessage =
         response.errorMessage ?? "Error al obtener las unidades de negocio";
+      console.log(response);
       return {
         status: "error",
         error: errorMessage,
@@ -70,6 +68,7 @@ async function fetchBusinessUnitsCached(
 
     if (!parsed.success) {
       const errorMessage = `Error al parsear respuesta: ${parsed.error.message}`;
+      console.log(errorMessage);
       return {
         status: "error",
         error: errorMessage,

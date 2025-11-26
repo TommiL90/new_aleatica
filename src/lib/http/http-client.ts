@@ -20,8 +20,8 @@ import {
  *
  * For Client Components with TanStack Query, call Server Actions that use this client.
  *
- * **NEW**: All methods now accept an optional `token` parameter as the last argument.
- * If provided, the client will use this token instead of calling `auth()` internally.
+ * **NEW**: All methods now accept an optional config object (`{ headers, options, token, body }`).
+ * If you pass `token`, the client lo usará en lugar de llamar internamente a `auth()`.
  * This is useful when using with 'use cache: remote' where auth() is not allowed.
  *
  * @example
@@ -49,7 +49,7 @@ import {
  * async function fetchUsersCached(token: string | null) {
  *   'use cache: remote'
  *   // Pass token to avoid calling auth() inside cached function
- *   return serverHttpClient.get<User[]>('/User', undefined, undefined, token)
+ *   return serverHttpClient.get<User[]>('/User', { token })
  * }
  *
  * // ✅ Correct: Client Component calling Server Action
@@ -159,6 +159,7 @@ class ServerHttpClient {
     try {
       return JSON.parse(responseText) as ApiStandardResponse<TResponse>;
     } catch (error) {
+      console.log(error);
       throw new HttpClientError(
         "Failed to parse JSON response",
         response.status,
@@ -210,82 +211,69 @@ class ServerHttpClient {
   // Métodos helper para cada verbo HTTP
   async get<TResponse>(
     endpoint: string,
-    options?: NextFetchOptions,
-    headers?: Record<string, string>,
-    token?: string | null,
+    config?: Omit<RequestConfig, "body">,
   ): Promise<ApiStandardResponse<TResponse>> {
     return await this.sendRequest<TResponse>({
       method: "GET",
       endpoint,
-      headers,
-      options,
-      token,
+      headers: config?.headers,
+      options: config?.options,
+      token: config?.token,
     });
   }
 
   async post<TResponse, TBody = unknown>(
     endpoint: string,
-    body?: TBody,
-    options?: NextFetchOptions,
-    headers?: Record<string, string>,
-    token?: string | null,
+    config?: RequestConfig<TBody>,
   ): Promise<ApiStandardResponse<TResponse>> {
     return await this.sendRequest<TResponse, TBody>({
       method: "POST",
       endpoint,
-      body,
-      headers,
-      options,
-      token,
+      body: config?.body,
+      headers: config?.headers,
+      options: config?.options,
+      token: config?.token,
     });
   }
 
   async put<TResponse, TBody = unknown>(
     endpoint: string,
-    body?: TBody,
-    options?: NextFetchOptions,
-    headers?: Record<string, string>,
-    token?: string | null,
+    config?: RequestConfig<TBody>,
   ): Promise<ApiStandardResponse<TResponse>> {
     return await this.sendRequest<TResponse, TBody>({
       method: "PUT",
       endpoint,
-      body,
-      headers,
-      options,
-      token,
+      body: config?.body,
+      headers: config?.headers,
+      options: config?.options,
+      token: config?.token,
     });
   }
 
   async patch<TResponse, TBody = unknown>(
     endpoint: string,
-    body?: TBody,
-    options?: NextFetchOptions,
-    headers?: Record<string, string>,
-    token?: string | null,
+    config?: RequestConfig<TBody>,
   ): Promise<ApiStandardResponse<TResponse>> {
     return await this.sendRequest<TResponse, TBody>({
       method: "PATCH",
       endpoint,
-      body,
-      headers,
-      options,
-      token,
+      body: config?.body,
+      headers: config?.headers,
+      options: config?.options,
+      token: config?.token,
     });
   }
 
   async delete<TResponse>(
     endpoint: string,
-    options?: NextFetchOptions,
-    headers?: Record<string, string>,
-    token?: string | null,
+    config?: Omit<RequestConfig, "body">,
   ): Promise<ApiStandardResponse<TResponse>> {
     return await this.sendRequest<TResponse>({
       method: "DELETE",
       endpoint,
-      headers,
-      options,
-      token,
+      headers: config?.headers,
+      options: config?.options,
+      token: config?.token,
     });
   }
 
@@ -310,8 +298,14 @@ class ServerHttpClient {
  * import { serverHttpClient } from '@/lib/http'
  *
  * export async function createUser(data: UserData) {
- *   return serverHttpClient.post<User>('/User', data)
+ *   return serverHttpClient.post<User>('/User', { body: data })
  * }
  * ```
  */
 export const serverHttpClient = ServerHttpClient.getInstance();
+type RequestConfig<TBody = unknown> = {
+  body?: TBody;
+  headers?: Record<string, string>;
+  options?: NextFetchOptions;
+  token?: string | null;
+};
