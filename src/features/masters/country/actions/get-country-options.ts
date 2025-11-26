@@ -35,8 +35,7 @@ async function fetchCountryOptionsCached(
       return {
         status: "error",
         error:
-          (response.errorMessage as string) ??
-          "Error al cargar los países",
+          (response.errorMessage as string) ?? "Error al cargar los países",
         code: response.status,
         message: response.errorMessage ?? "Error",
       };

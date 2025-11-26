@@ -359,11 +359,6 @@ export function BusinessUnitEditDialog({
   return (
     <Dialog open={open} onOpenChange={onOpenChange}>
       <DialogContent className="!max-w-4xl flex h-[90vh] max-h-[90vh] flex-col">
-        <pre>
-          <code>
-            {JSON.stringify(countriesQuery.data, null, 2)}
-          </code>
-        </pre>
         <DialogHeader className="shrink-0 border-b pb-4">
           <DialogTitle className="text-2xl">
             {businessUnit?.id
