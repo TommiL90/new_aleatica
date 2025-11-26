@@ -1,6 +1,6 @@
 "use client";
 
-import { Pie, PieChart } from "recharts";
+import { Cell, Pie, PieChart } from "recharts";
 import {
   Card,
   CardContent,
@@ -73,8 +73,11 @@ export function ProjectStatusPieChart({ data }: ProjectStatusPieChartProps) {
               dataKey="value"
               nameKey="statusKey"
               innerRadius={60}
-              fill="fill"
-            />
+            >
+              {data.map((entry) => (
+                <Cell key={entry.statusKey} fill={entry.fill} />
+              ))}
+            </Pie>
           </PieChart>
         </ChartContainer>
       </CardContent>

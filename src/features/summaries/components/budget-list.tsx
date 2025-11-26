@@ -6,11 +6,12 @@ import { DataTable } from "@/components/data-table/data-table";
 import { H2 } from "@/components/typography/h2";
 import { P } from "@/components/typography/p";
 import { useClientDataTable } from "@/hooks/use-client-data-table";
-import type { BudgetProject } from "../types";
+import type { SummaryOpProjectInfo } from "../schemas/summary-op-projects-info.schema";
+import type { SummaryProjectInfo } from "../schemas/summary-projects-info.schema";
 import { budgetColumns } from "./columns/budget-columns";
 
 interface BudgetListProps {
-  data: BudgetProject[];
+  data: (SummaryOpProjectInfo | SummaryProjectInfo)[];
   title: string;
 }
 
@@ -41,22 +42,9 @@ export const BudgetList: React.FC<BudgetListProps> = ({ data, title }) => {
             Gestión detallada de partidas presupuestarias
           </P>
         </div>
-        <div className="flex w-full gap-2 sm:w-auto">
-          <button className="flex items-center justify-center rounded-lg border border-slate-200 bg-white px-4 py-2 font-medium text-slate-600 text-sm shadow-sm transition-colors hover:bg-slate-50">
-            <Filter size={16} className="mr-2" />
-            Filtros
-          </button>
-          <button className="flex items-center justify-center rounded-lg bg-slate-900 px-4 py-2 font-medium text-sm text-white shadow-sm transition-colors hover:bg-slate-800">
-            <Download size={16} className="mr-2" />
-            Exportar
-          </button>
-        </div>
       </div>
 
-      <DataTable
-        className="rounded-xl border border-slate-200 bg-white shadow-sm"
-        table={table}
-      >
+      <DataTable table={table}>
         <div className="border-slate-200 border-b p-4">
           <div className="relative max-w-sm">
             <Search

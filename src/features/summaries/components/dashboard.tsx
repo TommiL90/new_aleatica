@@ -5,7 +5,8 @@ import { useMemo } from "react";
 import { H2 } from "@/components/typography/h2";
 import { P } from "@/components/typography/p";
 import { Card, CardContent, CardHeader } from "@/components/ui/card";
-import type { Data1, Tipo2 } from "../types";
+import type { SummaryOpCatalogsInfo } from "../schemas/summary-op-catalogs-info.schema";
+import type { SummaryOpProjectInfo } from "../schemas/summary-op-projects-info.schema";
 import {
   normalizeStatusKey,
   STATUS_DICTIONARY_MAP,
@@ -15,8 +16,8 @@ import { BudgetBarChart } from "./budget-bar-chart";
 import { ProjectStatusPieChart } from "./dashboard-pie-chart";
 
 interface DashboardProps {
-  kpis: Data1;
-  budgets: Tipo2;
+  kpis: SummaryOpCatalogsInfo;
+  budgets: SummaryOpProjectInfo[];
 }
 
 export const Dashboard: React.FC<DashboardProps> = ({ kpis, budgets }) => {

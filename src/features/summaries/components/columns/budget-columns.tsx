@@ -3,14 +3,17 @@
 import type { ColumnDef } from "@tanstack/react-table";
 import { ClientDataTableColumnHeader } from "@/components/data-table/client-data-table-column-header";
 import { valueFormat } from "@/lib/format";
-import type { BudgetProject } from "../../types";
+import type { SummaryOpProjectInfo } from "../../schemas/summary-op-projects-info.schema";
+import type { SummaryProjectInfo } from "../../schemas/summary-projects-info.schema";
 import { translateStatusLabel } from "../../utils/status-label";
 
 const getProgress = (tasksInfo: string) => {
-  const [done, total] = tasksInfo.split("/").map((value) => {
+  const parts = tasksInfo.split("/").map((value) => {
     const parsed = Number.parseInt(value, 10);
     return Number.isNaN(parsed) ? 0 : parsed;
   });
+  const done = parts[0] ?? 0;
+  const total = parts[1] ?? 0;
   const safeTotal = Math.max(total, 1);
   return Math.min(100, Math.max(0, (done / safeTotal) * 100));
 };
@@ -40,7 +43,9 @@ const StatusBadge = ({ status }: { status: string }) => {
   );
 };
 
-export const budgetColumns: ColumnDef<BudgetProject>[] = [
+export const budgetColumns: ColumnDef<
+  SummaryOpProjectInfo | SummaryProjectInfo
+>[] = [
   {
     accessorKey: "businessUnit",
     header: ({ column }) => (
