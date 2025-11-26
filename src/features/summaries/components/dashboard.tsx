@@ -3,8 +3,15 @@ import { Briefcase, Hammer, Layers, Package } from "lucide-react";
 import type React from "react";
 import { useMemo } from "react";
 import { H2 } from "@/components/typography/h2";
+import { H3 } from "@/components/typography/h3";
 import { P } from "@/components/typography/p";
-import { Card, CardContent, CardHeader } from "@/components/ui/card";
+import {
+  Card,
+  CardContent,
+  CardDescription,
+  CardHeader,
+  CardTitle,
+} from "@/components/ui/card";
 import type { SummaryOpCatalogsInfo } from "../schemas/summary-op-catalogs-info.schema";
 import type { SummaryOpProjectInfo } from "../schemas/summary-op-projects-info.schema";
 import {
@@ -105,7 +112,7 @@ export const Dashboard: React.FC<DashboardProps> = ({ kpis, budgets }) => {
         {kpiCards.map((kpi, idx) => (
           <Card
             key={idx}
-            className="border-slate-200 bg-white shadow-sm transition-shadow hover:shadow-md"
+            className="shadow-sm transition-shadow hover:shadow-md"
           >
             <CardHeader className="border-none pb-0">
               <div className="mb-4 flex items-center justify-between">
@@ -118,10 +125,10 @@ export const Dashboard: React.FC<DashboardProps> = ({ kpis, budgets }) => {
               </div>
             </CardHeader>
             <CardContent className="pt-0">
-              <h3 className="mb-1 font-bold text-3xl text-slate-900">
+              <CardTitle className="font-bold text-2xl">
                 {kpi.value.toLocaleString()}
-              </h3>
-              <p className="font-medium text-slate-500 text-sm">{kpi.label}</p>
+              </CardTitle>
+              <CardDescription>{kpi.label}</CardDescription>
             </CardContent>
           </Card>
         ))}

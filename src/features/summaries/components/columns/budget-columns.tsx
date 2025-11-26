@@ -3,6 +3,7 @@
 import type { ColumnDef } from "@tanstack/react-table";
 import { ClientDataTableColumnHeader } from "@/components/data-table/client-data-table-column-header";
 import { valueFormat } from "@/lib/format";
+import { cn } from "@/lib/utils";
 import type { SummaryOpProjectInfo } from "../../schemas/summary-op-projects-info.schema";
 import type { SummaryProjectInfo } from "../../schemas/summary-projects-info.schema";
 import { translateStatusLabel } from "../../utils/status-label";
@@ -130,11 +131,21 @@ export const budgetColumns: ColumnDef<
     header: ({ column }) => (
       <ClientDataTableColumnHeader column={column} title="Presupuesto" />
     ),
-    cell: ({ row }) => (
-      <span className="text-right font-medium font-mono text-slate-700">
-        ${valueFormat(row.original.budgetTotal)}
-      </span>
-    ),
+    cell: ({ row }) => {
+      const budgetTotal = row.original.budgetTotal;
+      const isNegative = budgetTotal < 0;
+
+      return (
+        <span
+          className={cn(
+            "text-right font-medium font-mono",
+            isNegative ? "text-destructive" : "text-slate-700",
+          )}
+        >
+          ${valueFormat(budgetTotal)}
+        </span>
+      );
+    },
     enableSorting: true,
   },
 ];
