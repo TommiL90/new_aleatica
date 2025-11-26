@@ -1,17 +1,23 @@
 export function formatDate(
   date: Date | string | number | undefined,
-  opts: Intl.DateTimeFormatOptions = {},
+  opts: Intl.DateTimeFormatOptions & { locale?: string } = {},
 ) {
   if (!date) return "";
 
   try {
-    return new Intl.DateTimeFormat("en-US", {
-      month: opts.month ?? "long",
-      day: opts.day ?? "numeric",
-      year: opts.year ?? "numeric",
-      ...opts,
+    const { locale, ...dateOpts } = opts;
+    return new Intl.DateTimeFormat(locale ?? "es-ES", {
+      month: dateOpts.month ?? "2-digit",
+      day: dateOpts.day ?? "2-digit",
+      year: dateOpts.year ?? "numeric",
+      ...dateOpts,
     }).format(new Date(date));
   } catch (_err) {
     return "";
   }
+}
+
+export function formatNumber(value: number | undefined, decimals = 2): string {
+  if (value === undefined || value === null) return "";
+  return Number(value).toFixed(decimals);
 }

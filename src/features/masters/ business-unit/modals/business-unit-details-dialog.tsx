@@ -12,6 +12,7 @@ import {
 } from "@/components/ui/dialog";
 import { ScrollArea } from "@/components/ui/scroll-area";
 import { Separator } from "@/components/ui/separator";
+import { formatDate, formatNumber } from "@/lib/format";
 import type { BusinessUnitResult } from "../schemas/business-units";
 
 interface BusinessUnitDetailsDialogProps {
@@ -199,7 +200,6 @@ export function BusinessUnitDetailsDialog({
   );
 }
 
-// ==================== Helper Components ====================
 
 function Section({
   title,
@@ -253,43 +253,27 @@ function InfoItem({ label, value }: { label: string; value: string | number }) {
   );
 }
 
+interface BadgeListProps {
+  items: Array<{ [key: string]: unknown }>;
+  labelKey: "name" | "mtAdministration";
+  variant?: "green" | "amber" | "secondary";
+}
+
 function BadgeList({
   items,
   labelKey,
   variant = "secondary",
-}: {
-  items: Array<Record<string, string | number>>;
-  labelKey: "name" | "mtAdministration";
-  variant?: "green" | "amber" | "secondary";
-}) {
+}: BadgeListProps) {
   if (!items.length) return null;
 
   return (
     <div className="flex flex-wrap gap-2">
       {items.map((item, idx) => (
         <Badge key={idx} variant={variant}>
-          {item[labelKey]}
+          {String(item[labelKey])}
         </Badge>
       ))}
     </div>
   );
 }
 
-// ==================== Helper Functions ====================
-
-function formatDate(dateString: string): string {
-  try {
-    const date = new Date(dateString);
-    return date.toLocaleDateString("es-ES", {
-      year: "numeric",
-      month: "2-digit",
-      day: "2-digit",
-    });
-  } catch {
-    return dateString;
-  }
-}
-
-function formatNumber(value: number): string {
-  return value.toFixed(2);
-}

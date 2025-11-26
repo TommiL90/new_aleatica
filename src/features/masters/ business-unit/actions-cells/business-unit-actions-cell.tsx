@@ -52,7 +52,9 @@ export function BusinessUnitActionsCell({
             </DropdownMenuSubContent>
           </DropdownMenuSub>
           <DropdownMenuSeparator />
-          <DropdownMenuItem>Eliminar</DropdownMenuItem>
+          <DropdownMenuItem className="bg-destructive/10 text-destructive focus:bg-destructive/20 focus:text-destructive">
+            Eliminar
+          </DropdownMenuItem>
         </DropdownMenuContent>
       </DropdownMenu>
 
