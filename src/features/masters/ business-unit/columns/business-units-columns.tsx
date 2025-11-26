@@ -1,29 +1,21 @@
 "use client";
 import type { ColumnDef } from "@tanstack/react-table";
-import Link from "next/link";
+import { Ellipsis } from "lucide-react";
 
 import { ClientDataTableColumnHeader } from "@/components/data-table/client-data-table-column-header";
 
-import { Badge } from "@/components/ui/badge";
-import { buttonVariants } from "@/components/ui/button";
-import { Checkbox } from "@/components/ui/checkbox";
+import { Button } from "@/components/ui/button";
 import {
-  Dialog,
-  DialogContent,
-  DialogDescription,
-  DialogHeader,
-  DialogTitle,
-  DialogTrigger,
-} from "@/components/ui/dialog";
-import {
-  Tooltip,
-  TooltipContent,
-  TooltipProvider,
-  TooltipTrigger,
-} from "@/components/ui/tooltip";
-import { cn } from "@/lib/utils";
+  DropdownMenu,
+  DropdownMenuContent,
+  DropdownMenuItem,
+  DropdownMenuSeparator,
+  DropdownMenuSub,
+  DropdownMenuSubContent,
+  DropdownMenuSubTrigger,
+  DropdownMenuTrigger,
+} from "@/components/ui/dropdown-menu";
 import type { BusinessUnitResult } from "../schemas/business-units";
-import { P } from "@/components/typography/p";
 
 export const businessUnitsColumns: ColumnDef<BusinessUnitResult>[] = [
   {
@@ -52,11 +44,43 @@ export const businessUnitsColumns: ColumnDef<BusinessUnitResult>[] = [
     ),
     cell: ({ row }) => <div>{row.getValue("mtCountry")}</div>,
   },
-
-  //   {
-  //     id: "actions",
-  //     cell: ({ row }) => <ProjectDataTableRowActions row={row.original} />,
-  //   },
+  {
+    id: "actions",
+    cell: () => {
+      return (
+        <DropdownMenu>
+          <DropdownMenuTrigger asChild>
+            <Button
+              aria-label="Open menu"
+              variant="ghost"
+              className="flex size-8 p-0 data-[state=open]:bg-muted"
+            >
+              <Ellipsis className="size-4" aria-hidden="true" />
+            </Button>
+          </DropdownMenuTrigger>
+          <DropdownMenuContent align="end" className="w-40">
+            <DropdownMenuItem>
+              Editar
+            </DropdownMenuItem>
+            <DropdownMenuSub>
+              <DropdownMenuSubTrigger>Estado</DropdownMenuSubTrigger>
+              <DropdownMenuSubContent>
+                <DropdownMenuItem>Activo</DropdownMenuItem>
+                <DropdownMenuItem>Inactivo</DropdownMenuItem>
+              </DropdownMenuSubContent>
+            </DropdownMenuSub>
+            <DropdownMenuSeparator />
+            <DropdownMenuItem>
+              Eliminar
+            </DropdownMenuItem>
+          </DropdownMenuContent>
+        </DropdownMenu>
+      );
+    },
+    enableSorting: false,
+    enableHiding: false,
+    size: 40,
+  },
 
 ];
 
