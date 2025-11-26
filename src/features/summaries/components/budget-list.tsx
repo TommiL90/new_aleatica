@@ -14,7 +14,6 @@ interface BudgetListProps {
 // Helper for status styling
 const getStatusBadge = (status: string) => {
   let styles = "bg-slate-100 text-slate-800";
-  const normalized = status.toLowerCase();
   switch (status.toLowerCase()) {
     case "approved":
       styles = "bg-emerald-100 text-emerald-800 border-emerald-200";

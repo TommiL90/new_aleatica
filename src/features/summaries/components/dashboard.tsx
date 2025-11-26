@@ -16,8 +16,11 @@ import {
   YAxis,
 } from "recharts";
 import { valueFormat } from "@/lib/format";
-import { normalizeStatusKey, translateStatusLabel } from "../utils/status-label";
 import type { Data1, Tipo2 } from "../types";
+import {
+  normalizeStatusKey,
+  translateStatusLabel,
+} from "../utils/status-label";
 
 interface DashboardProps {
   kpis: Data1;

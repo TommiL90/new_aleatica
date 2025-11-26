@@ -14,14 +14,10 @@ export const normalizeStatusKey = (status: string): string =>
 export const translateStatusLabel = (status: string): string => {
   const normalized = normalizeStatusKey(status);
   const dictionaryKey =
-    STATUS_DICTIONARY_MAP[
-      normalized as keyof typeof STATUS_DICTIONARY_MAP
-    ];
+    STATUS_DICTIONARY_MAP[normalized as keyof typeof STATUS_DICTIONARY_MAP];
   if (dictionaryKey) {
     return dictionaryNames[dictionaryKey];
   }
 
-  return (
-    dictionaryNames[normalized as keyof typeof dictionaryNames] ?? status
-  );
+  return dictionaryNames[normalized as keyof typeof dictionaryNames] ?? status;
 };
