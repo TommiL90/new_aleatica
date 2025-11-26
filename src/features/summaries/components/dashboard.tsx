@@ -16,7 +16,7 @@ import {
   translateStatusLabel,
 } from "../utils/status-label";
 import { BudgetBarChart } from "./budget-bar-chart";
-import { ProjectStatusPieChart } from "./pie-chart";
+import { ProjectStatusPieChart } from "./dashboard-pie-chart";
 
 interface DashboardProps {
   kpis: Data1;
@@ -29,10 +29,8 @@ export const Dashboard: React.FC<DashboardProps> = ({ kpis, budgets }) => {
     // Group by Business Unit for Bar Chart
     const byBU: Record<string, number> = {};
     budgets.forEach((b) => {
-      const val = parseFloat(b.budgetTotal);
-      // Using absolute value for visualization magnitude
-      const safeVal = Math.abs(val);
-      byBU[b.businessUnit] = (byBU[b.businessUnit] || 0) + safeVal;
+      const val = parseFloat(b.budgetTotal) || 0;
+      byBU[b.businessUnit] = (byBU[b.businessUnit] || 0) + val;
     });
 
     const barData = Object.keys(byBU).map((bu) => ({
