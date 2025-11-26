@@ -4,11 +4,7 @@ import type React from "react";
 import { useMemo } from "react";
 import { H2 } from "@/components/typography/h2";
 import { P } from "@/components/typography/p";
-import {
-  Card,
-  CardContent,
-  CardHeader,
-} from "@/components/ui/card";
+import { Card, CardContent, CardHeader } from "@/components/ui/card";
 import type { Data1, Tipo2 } from "../types";
 import {
   normalizeStatusKey,
