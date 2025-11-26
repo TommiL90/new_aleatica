@@ -14,10 +14,10 @@ import {
   DropdownMenuSubTrigger,
   DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu";
-import { BusinessUnitDetailsDialog } from "../modals/business-unit-details-dialog";
-import { BusinessUnitEditDialog } from "../modals/business-unit-edit-dialog";
-import { DeleteBusinessUnitDialog } from "../modals/delete-business-unit-dialog";
-import type { BusinessUnitResult } from "../schemas/business-units";
+import type { BusinessUnitResult } from "../../schemas/business-units";
+import { BusinessUnitDetailsDialog } from "./modals/business-unit-details-dialog";
+import { BusinessUnitEditDialog } from "./modals/business-unit-edit-dialog";
+import { DeleteBusinessUnitDialog } from "./modals/delete-business-unit-dialog";
 
 interface BusinessUnitActionsCellProps {
   row: BusinessUnitResult;

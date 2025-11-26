@@ -13,7 +13,7 @@ import {
 import { ScrollArea } from "@/components/ui/scroll-area";
 import { Separator } from "@/components/ui/separator";
 import { formatDate, formatNumber } from "@/lib/format";
-import type { BusinessUnitResult } from "../schemas/business-units";
+import type { BusinessUnitResult } from "../../../schemas/business-units";
 
 interface BusinessUnitDetailsDialogProps {
   businessUnit: BusinessUnitResult;

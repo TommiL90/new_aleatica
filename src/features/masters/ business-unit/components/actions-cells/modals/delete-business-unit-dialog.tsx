@@ -14,8 +14,8 @@ import {
   AlertDialogHeader,
   AlertDialogTitle,
 } from "@/components/ui/alert-dialog";
-import { deleteBusinessUnit } from "../actions/delete-business-unit";
-import type { BusinessUnitResult } from "../schemas/business-units";
+import { deleteBusinessUnit } from "../../../actions/delete-business-unit";
+import type { BusinessUnitResult } from "../../../schemas/business-units";
 
 interface DeleteBusinessUnitDialogProps {
   open: boolean;

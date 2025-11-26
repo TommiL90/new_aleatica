@@ -1,6 +1,6 @@
 "use client";
 import { DataTable } from "@/components/data-table/data-table";
-import { businessUnitsColumns } from "@/features/masters/ business-unit/columns/business-units-columns";
+import { businessUnitsColumns } from "@/features/masters/ business-unit/components/columns/business-units-columns";
 import type { BusinessUnitResult } from "@/features/masters/ business-unit/schemas/business-units";
 import { useClientDataTable } from "@/hooks/use-client-data-table";
 

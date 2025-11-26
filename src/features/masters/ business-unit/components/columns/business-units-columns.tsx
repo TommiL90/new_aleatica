@@ -2,8 +2,8 @@
 import type { ColumnDef } from "@tanstack/react-table";
 
 import { ClientDataTableColumnHeader } from "@/components/data-table/client-data-table-column-header";
+import type { BusinessUnitResult } from "../../schemas/business-units";
 import { BusinessUnitActionsCell } from "../actions-cells/business-unit-actions-cell";
-import type { BusinessUnitResult } from "../schemas/business-units";
 
 export const businessUnitsColumns: ColumnDef<BusinessUnitResult>[] = [
   {
